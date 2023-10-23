@@ -36,6 +36,7 @@ import type {
 } from './collections/operations/local/update'
 import type { EmailOptions, InitOptions, SanitizedConfig } from './config/types'
 import type { PaginatedDocs } from './database/types'
+import type { BuildEmailResult } from './email/types'
 import type { PayloadAuthenticate } from './express/middleware/authenticate'
 import type { ErrorHandler } from './express/middleware/errorHandler'
 import type { Globals } from './globals/config/types'
@@ -49,6 +50,9 @@ import type { TypeWithVersion } from './versions/types'
 import { decrypt, encrypt } from './auth/crypto'
 import localOperations from './collections/operations/local'
 import findConfig from './config/find'
+import buildEmail from './email/build'
+import { defaults as emailDefaults } from './email/defaults'
+import sendEmail from './email/sendEmail'
 import localGlobalOperations from './globals/operations/local'
 import registerGraphQLSchema from './graphql/registerSchema'
 import Logger from './utilities/logger'
@@ -85,6 +89,8 @@ export class BasePayload<TGeneratedTypes extends GeneratedTypes> {
   db: DatabaseAdapter
 
   decrypt = decrypt
+
+  email: BuildEmailResult
 
   emailOptions: EmailOptions
 
@@ -363,6 +369,10 @@ export class BasePayload<TGeneratedTypes extends GeneratedTypes> {
         'Email options provided in both init options and config. Using init options.',
       )
     }
+
+    this.emailOptions = emailOptions ?? emailDefaults
+    this.email = buildEmail(this.emailOptions, this.logger)
+    this.sendEmail = sendEmail.bind(this)
 
     if (!this.config.graphQL.disable) {
       registerGraphQLSchema(this)
