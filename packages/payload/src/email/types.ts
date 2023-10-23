@@ -1,7 +1,3 @@
-import type { TestAccount, Transporter } from 'nodemailer'
-import type Mail from 'nodemailer/lib/mailer'
-import type SMTPConnection from 'nodemailer/lib/smtp-connection'
-
 export type Message = {
   from: string
   html: string
@@ -9,13 +5,13 @@ export type Message = {
   to: string
 }
 
-export type MockEmailHandler = { account: TestAccount; transport: Transporter }
+export type MockEmailHandler = { account: any; transport: any }
 export type BuildEmailResult = Promise<
   | {
       fromAddress: string
       fromName: string
-      transport: Mail
-      transportOptions?: SMTPConnection.Options
+      transport: any
+      transportOptions?: any
     }
   | MockEmailHandler
 >
