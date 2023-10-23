@@ -1,5 +1,5 @@
 {
-  "name": "payload",
+  "name": "@stigma-io/payload",
   "version": "2.0.11",
   "description": "Node, React and MongoDB Headless CMS and Application Framework",
   "license": "MIT",
@@ -8,44 +8,7 @@
   "bin": {
     "payload": "bin.js"
   },
-  "exports": {
-    ".": {
-      "import": "./src/index.ts",
-      "require": "./src/index.ts",
-      "types": "./src/index.ts"
-    },
-    "./scss": {
-      "import": "./src/exports/scss.scss",
-      "require": "./src/exports/scss.scss",
-      "default": "./src/exports/scss.scss"
-    },
-    "./*": {
-      "import": "./src/exports/*.ts",
-      "require": "./src/exports/*.ts",
-      "types": "./src/exports/*.ts"
-    }
-  },
-  "scripts": {
-    "build": "pnpm copyfiles && pnpm build:swc && pnpm build:types && pnpm build:components && ts-node -T ./scripts/exportPointerFiles.ts",
-    "build:components": "webpack --config dist/admin/components.config.js",
-    "build:swc": "swc ./src -d ./dist --config-file .swcrc",
-    "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "build:watch": "nodemon --watch 'src/**' --ext 'ts,tsx' --exec \"pnpm build:tsc\"",
-    "clean": "rimraf {dist,*.tsbuildinfo}",
-    "clean:cache": "rimraf node_modules/.cache",
-    "copyfiles": "copyfiles -u 1 \"src/**/*.{html,css,scss,ttf,woff,woff2,eot,svg,jpg,png,json}\" dist/",
-    "dev": "nodemon",
-    "dev:postgres": "cross-env PAYLOAD_DATABASE=postgres nodemon",
-    "fix": "eslint \"src/**/*.ts\" --fix",
-    "lint": "eslint \"src/**/*.ts\"",
-    "prepublishOnly": "pnpm clean && pnpm build",
-    "pretest": "pnpm build",
-    "release:beta": "release-it pre --preReleaseId=beta --npm.tag=beta --config .release-it.pre.js",
-    "release:major": "release-it major",
-    "release:minor": "release-it minor",
-    "release:patch": "release-it patch",
-    "translateNewKeys": "ts-node -T ./scripts/translateNewKeys.ts"
-  },
+  "exports": null,
   "dependencies": {
     "@date-io/date-fns": "2.16.0",
     "@dnd-kit/core": "6.0.8",
@@ -129,7 +92,7 @@
     "sass": "1.69.4",
     "scheduler": "0.23.0",
     "scmp": "2.1.0",
-    "sharp": "0.32.6",
+    "sharp": "0.31.3",
     "swc-loader": "0.2.3",
     "terser-webpack-plugin": "5.3.9",
     "ts-essentials": "7.0.3",
@@ -137,7 +100,6 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@payloadcms/eslint-config": "workspace:*",
     "@release-it/conventional-changelog": "7.0.0",
     "@types/asap": "2.0.0",
     "@types/body-parser": "1.19.2",
@@ -202,7 +164,8 @@
     "terser-webpack-plugin": "^5.3.6",
     "url-loader": "4.1.1",
     "vite": "^4.4.9",
-    "webpack": "^5.78.0"
+    "webpack": "^5.78.0",
+    "@payloadcms/eslint-config": "1.0.0"
   },
   "peerDependencies": {
     "nodemailer": "6.9.4"
@@ -244,10 +207,7 @@
   ],
   "publishConfig": {
     "access": "public",
-    "exports": null,
-    "main": "./dist/index.js",
-    "registry": "https://registry.npmjs.org/",
-    "types": "./dist/index.d.ts"
+    "registry": "https://registry.npmjs.org/"
   },
   "homepage": "https://payloadcms.com",
   "author": {
@@ -269,5 +229,25 @@
   "bugs": {
     "url": "https://github.com/payloadcms/payload"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "scripts": {
+    "build": "pnpm copyfiles && pnpm build:swc && pnpm build:types && pnpm build:components && ts-node -T ./scripts/exportPointerFiles.ts",
+    "build:components": "webpack --config dist/admin/components.config.js",
+    "build:swc": "swc ./src -d ./dist --config-file .swcrc",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "build:watch": "nodemon --watch 'src/**' --ext 'ts,tsx' --exec \"pnpm build:tsc\"",
+    "clean": "rimraf {dist,*.tsbuildinfo}",
+    "clean:cache": "rimraf node_modules/.cache",
+    "copyfiles": "copyfiles -u 1 \"src/**/*.{html,css,scss,ttf,woff,woff2,eot,svg,jpg,png,json}\" dist/",
+    "dev": "nodemon",
+    "dev:postgres": "cross-env PAYLOAD_DATABASE=postgres nodemon",
+    "fix": "eslint \"src/**/*.ts\" --fix",
+    "lint": "eslint \"src/**/*.ts\"",
+    "pretest": "pnpm build",
+    "release:beta": "release-it pre --preReleaseId=beta --npm.tag=beta --config .release-it.pre.js",
+    "release:major": "release-it major",
+    "release:minor": "release-it minor",
+    "release:patch": "release-it patch",
+    "translateNewKeys": "ts-node -T ./scripts/translateNewKeys.ts"
+  }
 }
