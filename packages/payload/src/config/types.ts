@@ -2,8 +2,6 @@ import type { Express, NextFunction, Response } from 'express'
 import type { Options as ExpressFileUploadOptions } from 'express-fileupload'
 import type GraphQL from 'graphql'
 import type { InitOptions as i18nInitOptions } from 'i18next'
-import type { Transporter } from 'nodemailer'
-import type SMTPConnection from 'nodemailer/lib/smtp-connection'
 import type { DestinationStream, LoggerOptions } from 'pino'
 import type React from 'react'
 import type { DeepRequired } from 'ts-essentials'
@@ -74,13 +72,13 @@ export type GeneratePreviewURL = (
 ) => Promise<null | string> | null | string
 
 export type EmailTransport = Email & {
-  transport: Transporter
-  transportOptions?: SMTPConnection.Options
+  transport: any
+  transportOptions?: any
 }
 
 export type EmailTransportOptions = Email & {
-  transport?: Transporter
-  transportOptions: SMTPConnection.Options
+  transport?: any
+  transportOptions: any
 }
 
 export type EmailOptions = Email | EmailTransport | EmailTransportOptions

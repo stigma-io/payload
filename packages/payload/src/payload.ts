@@ -2,7 +2,6 @@ import type { Express, Router } from 'express'
 import type { ExecutionResult, GraphQLSchema, ValidationRule } from 'graphql'
 // @ts-expect-error // TODO Fix this - moduleResolution 16 breaks this import
 import type { OperationArgs, Request as graphQLRequest } from 'graphql-http/lib/handler'
-import type { SendMailOptions } from 'nodemailer'
 import type pino from 'pino'
 
 import crypto from 'crypto'
@@ -50,9 +49,6 @@ import type { TypeWithVersion } from './versions/types'
 import { decrypt, encrypt } from './auth/crypto'
 import localOperations from './collections/operations/local'
 import findConfig from './config/find'
-import buildEmail from './email/build'
-import { defaults as emailDefaults } from './email/defaults'
-import sendEmail from './email/sendEmail'
 import localGlobalOperations from './globals/operations/local'
 import registerGraphQLSchema from './graphql/registerSchema'
 import Logger from './utilities/logger'
@@ -247,7 +243,7 @@ export class BasePayload<TGeneratedTypes extends GeneratedTypes> {
 
   secret: string
 
-  sendEmail: (message: SendMailOptions) => Promise<unknown>
+  sendEmail: (message: any) => Promise<unknown>
 
   types: {
     arrayTypes: any
@@ -369,10 +365,6 @@ export class BasePayload<TGeneratedTypes extends GeneratedTypes> {
         'Email options provided in both init options and config. Using init options.',
       )
     }
-
-    this.emailOptions = emailOptions ?? emailDefaults
-    this.email = buildEmail(this.emailOptions, this.logger)
-    this.sendEmail = sendEmail.bind(this)
 
     if (!this.config.graphQL.disable) {
       registerGraphQLSchema(this)
