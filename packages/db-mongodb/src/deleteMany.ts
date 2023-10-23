@@ -1,5 +1,5 @@
-import type { DeleteMany } from 'payload/database'
-import type { PayloadRequest } from 'payload/types'
+import type { DeleteMany } from '@stigma-io/payload/database'
+import type { PayloadRequest } from '@stigma-io/payload/types'
 
 import type { MongooseAdapter } from '.'
 

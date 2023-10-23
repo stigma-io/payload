@@ -1,10 +1,10 @@
 import type { ClientSession, ConnectOptions, Connection } from 'mongoose'
-import type { Payload } from 'payload'
-import type { BaseDatabaseAdapter } from 'payload/database'
+import type { Payload } from '@stigma-io/payload'
+import type { BaseDatabaseAdapter } from '@stigma-io/payload/database'
 
 import mongoose from 'mongoose'
 import path from 'path'
-import { createDatabaseAdapter } from 'payload/database'
+import { createDatabaseAdapter } from '@stigma-io/payload/database'
 
 export type { MigrateDownArgs, MigrateUpArgs } from './types'
 
@@ -67,7 +67,7 @@ export type MongooseAdapter = BaseDatabaseAdapter &
 
 type MongooseAdapterResult = (args: { payload: Payload }) => MongooseAdapter
 
-declare module 'payload' {
+declare module '@stigma-io/payload' {
   export interface DatabaseAdapter
     extends Omit<BaseDatabaseAdapter, 'sessions'>,
       Omit<Args, 'migrationDir'> {

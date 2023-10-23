@@ -1,7 +1,13 @@
 'use client'
 import type { SerializedEditorState } from 'lexical'
 
-import { Error, FieldDescription, Label, useField, withCondition } from 'payload/components/forms'
+import {
+  Error,
+  FieldDescription,
+  Label,
+  useField,
+  withCondition,
+} from '@stigma-io/payload/components/forms'
 import React, { useCallback } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 

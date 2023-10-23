@@ -1,7 +1,7 @@
 import type { SerializedEditorState } from 'lexical'
-import type { FieldPermissions } from 'payload/auth'
-import type { FieldTypes } from 'payload/config'
-import type { RichTextFieldProps } from 'payload/types'
+import type { FieldPermissions } from '@stigma-io/payload/auth'
+import type { FieldTypes } from '@stigma-io/payload/config'
+import type { RichTextFieldProps } from '@stigma-io/payload/types'
 
 import type { SanitizedEditorConfig } from './field/lexical/config/types'
 

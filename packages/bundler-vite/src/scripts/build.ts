@@ -1,4 +1,4 @@
-import type { SanitizedConfig } from 'payload/config'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
 // @ts-expect-error
 import type { InlineConfig } from 'vite'
 

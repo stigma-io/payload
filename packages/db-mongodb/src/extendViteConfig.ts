@@ -1,11 +1,11 @@
-import type { SanitizedConfig } from 'payload/config'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
 
 export const vite = (config) => {
   return {
     ...config,
     optimizeDeps: {
       ...config.optimizeDeps,
-      exclude: [...config.optimizeDeps.exclude, '@payloadcms/db-mongodb'],
+      exclude: [...config.optimizeDeps.exclude, '@stigma-io/payload-db-mongodb'],
     },
   }
 }

@@ -1,5 +1,0 @@
-export { handleMessage } from './handleMessage'
-export { mergeData } from './mergeData'
-export { ready } from './ready'
-export { subscribe } from './subscribe'
-export { unsubscribe } from './unsubscribe'

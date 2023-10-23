@@ -17,6 +17,7 @@ import { useLocale } from '../../utilities/Locale'
 import { usePreferences } from '../../utilities/Preferences'
 import RenderCustomComponent from '../../utilities/RenderCustomComponent'
 import DefaultAccount from './Default'
+import { isMemoComponent } from '../../../../utilities/isMemoComponent'
 
 const AccountView: React.FC = () => {
   const { state: locationState } = useLocation<{ data: unknown }>()
@@ -147,7 +148,9 @@ const AccountView: React.FC = () => {
   return (
     <RenderCustomComponent
       CustomComponent={
-        typeof CustomAccountComponent === 'function' ? CustomAccountComponent : undefined
+        typeof CustomAccountComponent === 'function' || isMemoComponent(CustomAccountComponent)
+          ? (CustomAccountComponent as React.ComponentType<any>)
+          : undefined
       }
       DefaultComponent={DefaultAccount}
       componentProps={componentProps}

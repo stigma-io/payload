@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-use-before-define */
 import type { IndexOptions, SchemaOptions, SchemaTypeOptions } from 'mongoose'
-import type { SanitizedConfig, SanitizedLocalizationConfig } from 'payload/config'
+import type { SanitizedConfig, SanitizedLocalizationConfig } from '@stigma-io/payload/config'
 import type {
   ArrayField,
   Block,
@@ -27,8 +27,13 @@ import type {
   TextField,
   TextareaField,
   UploadField,
-} from 'payload/types'
-import type { FieldAffectingData, NonPresentationalField, Tab, UnnamedTab } from 'payload/types'
+} from '@stigma-io/payload/types'
+import type {
+  FieldAffectingData,
+  NonPresentationalField,
+  Tab,
+  UnnamedTab,
+} from '@stigma-io/payload/types'
 
 import { Schema } from 'mongoose'
 import {
@@ -36,7 +41,7 @@ import {
   fieldIsLocalized,
   fieldIsPresentationalOnly,
   tabHasName,
-} from 'payload/types'
+} from '@stigma-io/payload/types'
 
 export type BuildSchemaOptions = {
   allowIDField?: boolean

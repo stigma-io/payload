@@ -1,6 +1,6 @@
 import type { PaginateOptions } from 'mongoose'
-import type { SanitizedConfig } from 'payload/config'
-import type { Field } from 'payload/types'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
+import type { Field } from '@stigma-io/payload/types'
 
 import { getLocalizedSortProperty } from './getLocalizedSortProperty'
 

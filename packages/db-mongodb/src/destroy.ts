@@ -1,4 +1,4 @@
-import type { Destroy } from 'payload/database'
+import type { Destroy } from '@stigma-io/payload/database'
 
 import mongoose from 'mongoose'
 

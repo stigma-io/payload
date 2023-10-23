@@ -1,4 +1,4 @@
-import type { SanitizedConfig } from 'payload/config'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
 
 import mongoose from 'mongoose'
 

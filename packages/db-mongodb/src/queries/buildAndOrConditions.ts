@@ -1,5 +1,5 @@
-import type { Payload } from 'payload'
-import type { Field, Where } from 'payload/types'
+import type { Payload } from '@stigma-io/payload'
+import type { Field, Where } from '@stigma-io/payload/types'
 
 import { parseParams } from './parseParams'
 

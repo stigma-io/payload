@@ -1,13 +1,13 @@
-import type { Payload } from 'payload'
-import type { PathToQuery } from 'payload/database'
-import type { Field } from 'payload/types'
-import type { Operator } from 'payload/types'
+import type { Payload } from '@stigma-io/payload'
+import type { PathToQuery } from '@stigma-io/payload/database'
+import type { Field } from '@stigma-io/payload/types'
+import type { Operator } from '@stigma-io/payload/types'
 
 import objectID from 'bson-objectid'
 import mongoose from 'mongoose'
-import { getLocalizedPaths } from 'payload/database'
-import { fieldAffectsData } from 'payload/types'
-import { validOperators } from 'payload/types'
+import { getLocalizedPaths } from '@stigma-io/payload/database'
+import { fieldAffectsData } from '@stigma-io/payload/types'
+import { validOperators } from '@stigma-io/payload/types'
 
 import type { MongooseAdapter } from '..'
 

@@ -129,7 +129,7 @@ export type InitOptions = {
    *
    * @see https://payloadcms.com/docs/email/overview
    */
-  email?: EmailOptions
+  // email?: EmailOptions
 
   /** Express app for Payload to use */
   express?: Express
@@ -243,7 +243,9 @@ export type AdminViewProps = {
   user: User | null | undefined
 }
 
-export type AdminViewComponent = React.ComponentType<AdminViewProps>
+export type AdminViewComponent =
+  | React.ComponentType<AdminViewProps>
+  | React.MemoExoticComponent<React.ComponentType<AdminViewProps>>
 
 export type AdminView = AdminViewComponent | AdminViewConfig
 
@@ -521,7 +523,7 @@ export type Config = {
    *
    * @see https://payloadcms.com/docs/email/overview
    */
-  email?: EmailOptions
+  // email?: EmailOptions
   /** Custom REST endpoints */
   endpoints?: Endpoint[]
   /**

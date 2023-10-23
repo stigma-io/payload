@@ -1,5 +1,5 @@
-import type { UpdateGlobalVersionArgs } from 'payload/database'
-import type { PayloadRequest, TypeWithID } from 'payload/types'
+import type { UpdateGlobalVersionArgs } from '@stigma-io/payload/database'
+import type { PayloadRequest, TypeWithID } from '@stigma-io/payload/types'
 
 import type { MongooseAdapter } from '.'
 

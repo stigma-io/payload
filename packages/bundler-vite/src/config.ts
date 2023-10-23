@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import type { SanitizedConfig } from 'payload/config'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
 // @ts-expect-error
 import type { InlineConfig } from 'vite'
 
@@ -28,7 +28,8 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
   const absoluteAliases = {}
 
   const alias = [
-    { find: '@payloadcms/bundler-vite', replacement: path.resolve(__dirname, '../mock.js') },
+    { find: '@stigma-io/payload-bundler-vite', replacement: path.resolve(__dirname, '../mock.js') },
+    { find: '@stigma-io/payload-db-mongodb', replacement: path.resolve(__dirname, '../mock.js') },
     { find: 'path', replacement: require.resolve('path-browserify') },
     { find: 'payload-config', replacement: payloadConfig.paths.rawConfig },
     { find: /payload$/, replacement: mockModulePath },
@@ -90,9 +91,9 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
       exclude: [
         // Dependencies that need aliases should be excluded
         // from pre-bundling
-        '@payloadcms/bundler-vite',
+        '@stigma-io/payload-bundler-vite',
       ],
-      include: ['payload/components/root', 'react-dom/client'],
+      include: ['@stigma-io/payload/components/root', 'react-dom/client'],
     },
     plugins: [
       {
@@ -134,7 +135,7 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
     root: path.resolve(__dirname, './'),
     server: {
       fs: {
-        allow: [searchForWorkspaceRoot(process.cwd()), path.resolve(__dirname, '../../../payload')],
+        allow: [searchForWorkspaceRoot(process.cwd()), path.resolve(__dirname, '../../payload')],
       },
       hmr: {
         port: hmrPort,

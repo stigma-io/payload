@@ -1,5 +1,5 @@
-import type { CreateGlobal } from 'payload/database'
-import type { PayloadRequest } from 'payload/types'
+import type { CreateGlobal } from '@stigma-io/payload/database'
+import type { PayloadRequest } from '@stigma-io/payload/types'
 
 import type { MongooseAdapter } from '.'
 

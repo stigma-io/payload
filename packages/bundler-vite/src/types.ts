@@ -1,5 +1,5 @@
-import type { Payload } from 'payload'
-import type { PayloadHandler, SanitizedConfig } from 'payload/config'
+import type { Payload } from '@stigma-io/payload'
+import type { PayloadHandler, SanitizedConfig } from '@stigma-io/payload/config'
 
 export interface PayloadBundler {
   build: (payloadConfig: SanitizedConfig) => Promise<void> // used in `payload build`

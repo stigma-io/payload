@@ -1,7 +1,7 @@
-import type { Block } from 'payload/types'
+import type { Block } from '@stigma-io/payload/types'
 
-import { baseBlockFields } from 'payload/config'
-import { formatLabels, getTranslation } from 'payload/utilities'
+import { baseBlockFields } from '@stigma-io/payload/config'
+import { formatLabels, getTranslation } from '@stigma-io/payload/utilities'
 
 import type { FeatureProvider } from '../types'
 

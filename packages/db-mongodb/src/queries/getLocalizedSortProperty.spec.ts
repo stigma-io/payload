@@ -1,5 +1,5 @@
-import { sanitizeConfig } from 'payload/config'
-import { Config } from 'payload/config'
+import { sanitizeConfig } from '@stigma-io/payload/config'
+import { Config } from '@stigma-io/payload/config'
 import { getLocalizedSortProperty } from './getLocalizedSortProperty'
 
 const config = {

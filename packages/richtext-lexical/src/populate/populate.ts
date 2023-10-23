@@ -1,6 +1,6 @@
 import type { SerializedEditorState } from 'lexical'
-import type { PayloadRequest } from 'payload/types'
-import type { Collection, Field, RichTextField } from 'payload/types'
+import type { PayloadRequest } from '@stigma-io/payload/types'
+import type { Collection, Field, RichTextField } from '@stigma-io/payload/types'
 
 import type { AdapterProps } from '../types'
 

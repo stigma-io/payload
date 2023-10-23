@@ -1,6 +1,6 @@
-import type { SanitizedCollectionConfig } from 'payload/types'
+import type { SanitizedCollectionConfig } from '@stigma-io/payload/types'
 
-import { useConfig } from 'payload/components/utilities'
+import { useConfig } from '@stigma-io/payload/components/utilities'
 import * as React from 'react'
 
 type options = { uploads: boolean }

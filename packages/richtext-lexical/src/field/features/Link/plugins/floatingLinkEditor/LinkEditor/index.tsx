@@ -1,6 +1,6 @@
 'use client'
 import type { LexicalCommand } from 'lexical'
-import type { Data, Fields } from 'payload/types'
+import type { Data, Fields } from '@stigma-io/payload/types'
 
 import { useModal } from '@faceless-ui/modal'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
@@ -14,7 +14,7 @@ import {
   SELECTION_CHANGE_COMMAND,
   createCommand,
 } from 'lexical'
-import { formatDrawerSlug } from 'payload/components/elements'
+import { formatDrawerSlug } from '@stigma-io/payload/components/elements'
 import {
   buildStateFromSchema,
   useAuth,
@@ -22,9 +22,9 @@ import {
   useDocumentInfo,
   useEditDepth,
   useLocale,
-} from 'payload/components/utilities'
-import { sanitizeFields } from 'payload/config'
-import { getTranslation } from 'payload/utilities'
+} from '@stigma-io/payload/components/utilities'
+import { sanitizeFields } from '@stigma-io/payload/config'
+import { getTranslation } from '@stigma-io/payload/utilities'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 

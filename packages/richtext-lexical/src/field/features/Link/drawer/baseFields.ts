@@ -1,7 +1,7 @@
-import type { Config } from 'payload/config'
-import type { Field } from 'payload/types'
+import type { Config } from '@stigma-io/payload/config'
+import type { Field } from '@stigma-io/payload/types'
 
-import { extractTranslations } from 'payload/utilities'
+import { extractTranslations } from '@stigma-io/payload/utilities'
 
 const translations = extractTranslations([
   'fields:textToDisplay',

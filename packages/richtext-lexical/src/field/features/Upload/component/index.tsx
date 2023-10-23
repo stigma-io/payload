@@ -4,12 +4,16 @@ import type { SanitizedCollectionConfig } from 'payload/types'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection'
 import { $getNodeByKey } from 'lexical'
-import { Button } from 'payload/components'
-import { DrawerToggler, useDocumentDrawer, useDrawerSlug } from 'payload/components/elements'
-import { FileGraphic } from 'payload/components/graphics'
-import { usePayloadAPI, useThumbnail } from 'payload/components/hooks'
-import { useConfig } from 'payload/components/utilities'
-import { getTranslation } from 'payload/utilities'
+import { Button } from '@stigma-io/payload/components'
+import {
+  DrawerToggler,
+  useDocumentDrawer,
+  useDrawerSlug,
+} from '@stigma-io/payload/components/elements'
+import { FileGraphic } from '@stigma-io/payload/components/graphics'
+import { usePayloadAPI, useThumbnail } from '@stigma-io/payload/components/hooks'
+import { useConfig } from '@stigma-io/payload/components/utilities'
+import { getTranslation } from '@stigma-io/payload/utilities'
 import React, { useCallback, useReducer, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 

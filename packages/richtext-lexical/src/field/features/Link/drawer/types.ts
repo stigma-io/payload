@@ -1,4 +1,4 @@
-import { type Field, type Fields } from 'payload/types'
+import { type Field, type Fields } from '@stigma-io/payload/types'
 
 export interface Props {
   drawerSlug: string

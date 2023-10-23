@@ -7,7 +7,7 @@ import {
   type LexicalEditor,
   createCommand,
 } from 'lexical'
-import { useListDrawer } from 'payload/components/elements'
+import { useListDrawer } from '@stigma-io/payload/components/elements'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { EnabledRelationshipsCondition } from '../../Relationship/utils/EnabledRelationshipsCondition'

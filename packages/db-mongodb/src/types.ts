@@ -6,8 +6,8 @@ import type {
   PaginateModel,
   SchemaOptions,
 } from 'mongoose'
-import type { Payload } from 'payload'
-import type { SanitizedConfig } from 'payload/config'
+import type { Payload } from '@stigma-io/payload'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
 import type {
   ArrayField,
   BlockField,
@@ -30,7 +30,7 @@ import type {
   TextField,
   TextareaField,
   UploadField,
-} from 'payload/types'
+} from '@stigma-io/payload/types'
 
 import type { BuildQueryArgs } from './queries/buildQuery'
 

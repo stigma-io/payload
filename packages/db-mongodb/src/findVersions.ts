@@ -1,8 +1,8 @@
 import type { PaginateOptions } from 'mongoose'
-import type { FindVersions } from 'payload/database'
-import type { PayloadRequest } from 'payload/types'
+import type { FindVersions } from '@stigma-io/payload/database'
+import type { PayloadRequest } from '@stigma-io/payload/types'
 
-import { flattenWhereToOperators } from 'payload/database'
+import { flattenWhereToOperators } from '@stigma-io/payload/database'
 
 import type { MongooseAdapter } from '.'
 

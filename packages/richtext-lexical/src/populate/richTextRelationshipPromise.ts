@@ -1,5 +1,5 @@
 import type { SerializedEditorState, SerializedLexicalNode } from 'lexical'
-import type { PayloadRequest, RichTextAdapter, RichTextField } from 'payload/types'
+import type { PayloadRequest, RichTextAdapter, RichTextField } from '@stigma-io/payload/types'
 
 import type { PopulationPromise } from '../field/features/types'
 import type { AdapterProps } from '../types'

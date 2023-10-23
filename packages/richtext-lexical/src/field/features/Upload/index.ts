@@ -1,4 +1,4 @@
-import type { Field } from 'payload/types'
+import type { Field } from '@stigma-io/payload/types'
 
 import payload from 'payload'
 

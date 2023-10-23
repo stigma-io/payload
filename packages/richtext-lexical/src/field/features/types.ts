@@ -1,8 +1,8 @@
 import type { Transformer } from '@lexical/markdown'
 import type { Klass, LexicalEditor, LexicalNode, SerializedEditorState } from 'lexical'
 import type { SerializedLexicalNode } from 'lexical'
-import type { SanitizedConfig } from 'payload/config'
-import type { PayloadRequest, RichTextField, ValidateOptions } from 'payload/types'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
+import type { PayloadRequest, RichTextField, ValidateOptions } from '@stigma-io/payload/types'
 import type React from 'react'
 
 import type { AdapterProps } from '../../types'

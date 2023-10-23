@@ -1,6 +1,6 @@
-import type { Field, PayloadRequest, RichTextAdapter } from 'payload/types'
+import type { Field, PayloadRequest, RichTextAdapter } from '@stigma-io/payload/types'
 
-import { fieldAffectsData, fieldHasSubFields, fieldIsArrayType } from 'payload/types'
+import { fieldAffectsData, fieldHasSubFields, fieldIsArrayType } from '@stigma-io/payload/types'
 
 import type { PopulationPromise } from '../field/features/types'
 

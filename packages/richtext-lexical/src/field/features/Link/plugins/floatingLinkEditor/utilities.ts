@@ -1,6 +1,6 @@
 import type { i18n } from 'i18next'
-import type { SanitizedConfig } from 'payload/config'
-import type { Field, GroupField } from 'payload/types'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
+import type { Field, GroupField } from '@stigma-io/payload/types'
 
 import { getBaseFields } from '../../drawer/baseFields'
 

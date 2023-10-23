@@ -1,10 +1,10 @@
 import type { i18n } from 'i18next'
-import type { SanitizedConfig } from 'payload/config'
-import type { Field } from 'payload/types'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
+import type { Field } from '@stigma-io/payload/types'
 
 import { $findMatchingParent } from '@lexical/utils'
 import { $getSelection, $isRangeSelection } from 'lexical'
-import { withMergedProps } from 'payload/utilities'
+import { withMergedProps } from '@stigma-io/payload/utilities'
 
 import type { HTMLConverter } from '../converters/html/converter/types'
 import type { FeatureProvider } from '../types'

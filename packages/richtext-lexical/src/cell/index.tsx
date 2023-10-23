@@ -1,6 +1,6 @@
 'use client'
 import type { SerializedEditorState } from 'lexical'
-import type { CellComponentProps, RichTextField } from 'payload/types'
+import type { CellComponentProps, RichTextField } from '@stigma-io/payload/types'
 
 import { createHeadlessEditor } from '@lexical/headless'
 import { $getRoot } from 'lexical'

@@ -1,8 +1,8 @@
 import type { SerializedEditorState } from 'lexical'
 import type { EditorConfig as LexicalEditorConfig } from 'lexical/LexicalEditor'
-import type { RichTextAdapter } from 'payload/types'
+import type { RichTextAdapter } from '@stigma-io/payload/types'
 
-import { withMergedProps } from 'payload/utilities'
+import { withMergedProps } from '@stigma-io/payload/utilities'
 
 import type { FeatureProvider } from './field/features/types'
 import type { EditorConfig, SanitizedEditorConfig } from './field/lexical/config/types'

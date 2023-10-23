@@ -1,8 +1,7 @@
-// @ts-expect-error // TODO: Fix this import
 import type { TransactionOptions } from 'mongodb'
-import type { BeginTransaction } from 'payload/database'
+import type { BeginTransaction } from '@stigma-io/payload/database'
 
-import { APIError } from 'payload/errors'
+import { APIError } from '@stigma-io/payload/errors'
 import { v4 as uuid } from 'uuid'
 
 let transactionsNotAvailable: boolean

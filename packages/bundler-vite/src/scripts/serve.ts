@@ -1,5 +1,5 @@
-import type { Payload } from 'payload'
-import type { PayloadHandler } from 'payload/config'
+import type { Payload } from '@stigma-io/payload'
+import type { PayloadHandler } from '@stigma-io/payload/config'
 
 import compression from 'compression'
 import history from 'connect-history-api-fallback'

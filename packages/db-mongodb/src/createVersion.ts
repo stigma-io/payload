@@ -1,6 +1,6 @@
-import type { CreateVersion } from 'payload/database'
-import type { PayloadRequest } from 'payload/types'
-import type { Document } from 'payload/types'
+import type { CreateVersion } from '@stigma-io/payload/database'
+import type { PayloadRequest } from '@stigma-io/payload/types'
+import type { Document } from '@stigma-io/payload/types'
 
 import type { MongooseAdapter } from '.'
 

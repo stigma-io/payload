@@ -1,19 +1,19 @@
-import type { SanitizedCollectionConfig } from 'payload/types'
+import type { SanitizedCollectionConfig } from '@stigma-io/payload/types'
 
 import { useModal } from '@faceless-ui/modal'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $getNodeByKey } from 'lexical'
-import { Drawer } from 'payload/components/elements'
-import { Form, FormSubmit, RenderFields, fieldTypes } from 'payload/components/forms'
+import { Drawer } from '@stigma-io/payload/components/elements'
+import { Form, FormSubmit, RenderFields, fieldTypes } from '@stigma-io/payload/components/forms'
 import {
   buildStateFromSchema,
   useAuth,
   useConfig,
   useDocumentInfo,
   useLocale,
-} from 'payload/components/utilities'
-import { sanitizeFields } from 'payload/config'
-import { deepCopyObject, getTranslation } from 'payload/utilities'
+} from '@stigma-io/payload/components/utilities'
+import { sanitizeFields } from '@stigma-io/payload/config'
+import { deepCopyObject, getTranslation } from '@stigma-io/payload/utilities'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 

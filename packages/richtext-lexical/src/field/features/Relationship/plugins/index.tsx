@@ -2,7 +2,7 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $insertNodeToNearestRoot } from '@lexical/utils'
 import { COMMAND_PRIORITY_EDITOR, type LexicalCommand, createCommand } from 'lexical'
-import { useConfig } from 'payload/components/utilities'
+import { useConfig } from '@stigma-io/payload/components/utilities'
 import { useEffect } from 'react'
 import React from 'react'
 

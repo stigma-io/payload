@@ -1,8 +1,8 @@
-import type { SanitizedConfig } from 'payload/config'
-import type { Field } from 'payload/types'
+import type { SanitizedConfig } from '@stigma-io/payload/config'
+import type { Field } from '@stigma-io/payload/types'
 
-import { fieldAffectsData, fieldIsPresentationalOnly } from 'payload/types'
-import { flattenTopLevelFields } from 'payload/utilities'
+import { fieldAffectsData, fieldIsPresentationalOnly } from '@stigma-io/payload/types'
+import { flattenTopLevelFields } from '@stigma-io/payload/utilities'
 
 type Args = {
   config: SanitizedConfig

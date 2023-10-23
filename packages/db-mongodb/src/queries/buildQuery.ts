@@ -1,7 +1,7 @@
-import type { Payload } from 'payload'
-import type { Field, Where } from 'payload/types'
+import type { Payload } from '@stigma-io/payload'
+import type { Field, Where } from '@stigma-io/payload/types'
 
-import { QueryError } from 'payload/errors'
+import { QueryError } from '@stigma-io/payload/errors'
 
 import { parseParams } from './parseParams'
 

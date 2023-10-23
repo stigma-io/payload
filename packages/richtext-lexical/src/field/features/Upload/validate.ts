@@ -1,5 +1,5 @@
-import { fieldAffectsData } from 'payload/types'
-import { getIDType, isValidID } from 'payload/utilities'
+import { fieldAffectsData } from '@stigma-io/payload/types'
+import { getIDType, isValidID } from '@stigma-io/payload/utilities'
 
 import type { NodeValidation } from '../types'
 import type { SerializedUploadNode } from './nodes/UploadNode'

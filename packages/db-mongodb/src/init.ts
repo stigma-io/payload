@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import type { PaginateOptions } from 'mongoose'
-import type { Init } from 'payload/database'
-import type { SanitizedCollectionConfig } from 'payload/types'
+import type { Init } from '@stigma-io/payload/database'
+import type { SanitizedCollectionConfig } from '@stigma-io/payload/types'
 
 import mongoose from 'mongoose'
 import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2'
@@ -10,7 +10,7 @@ import {
   buildVersionCollectionFields,
   buildVersionGlobalFields,
   getVersionsModelName,
-} from 'payload/versions'
+} from '@stigma-io/payload/versions'
 
 import type { MongooseAdapter } from '.'
 import type { CollectionModel } from './types'

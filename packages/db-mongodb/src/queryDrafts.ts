@@ -1,8 +1,8 @@
 import type { PaginateOptions } from 'mongoose'
-import type { QueryDrafts } from 'payload/database'
-import type { PayloadRequest } from 'payload/types'
+import type { QueryDrafts } from '@stigma-io/payload/database'
+import type { PayloadRequest } from '@stigma-io/payload/types'
 
-import { combineQueries, flattenWhereToOperators } from 'payload/database'
+import { combineQueries, flattenWhereToOperators } from '@stigma-io/payload/database'
 
 import type { MongooseAdapter } from '.'
 

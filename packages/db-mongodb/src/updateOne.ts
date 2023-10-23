@@ -1,8 +1,8 @@
-import type { UpdateOne } from 'payload/database'
-import type { PayloadRequest } from 'payload/types'
+import type { UpdateOne } from '@stigma-io/payload/database'
+import type { PayloadRequest } from '@stigma-io/payload/types'
 
-import { ValidationError } from 'payload/errors'
-import { i18nInit } from 'payload/utilities'
+import { ValidationError } from '@stigma-io/payload/errors'
+import { i18nInit } from '@stigma-io/payload/utilities'
 
 import type { MongooseAdapter } from '.'
 

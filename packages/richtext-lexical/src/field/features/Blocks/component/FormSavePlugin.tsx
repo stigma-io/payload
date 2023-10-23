@@ -1,7 +1,7 @@
-import type { Data, FieldWithPath, Fields } from 'payload/types'
+import type { Data, FieldWithPath, Fields } from '@stigma-io/payload/types'
 import type React from 'react'
 
-import { reduceFieldsToValues, useAllFormFields } from 'payload/components/forms'
+import { reduceFieldsToValues, useAllFormFields } from '@stigma-io/payload/components/forms'
 import { useEffect } from 'react'
 
 import './index.scss'

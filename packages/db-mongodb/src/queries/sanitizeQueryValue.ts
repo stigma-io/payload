@@ -1,7 +1,7 @@
-import type { Field, TabAsField } from 'payload/types'
+import type { Field, TabAsField } from '@stigma-io/payload/types'
 
 import mongoose from 'mongoose'
-import { createArrayFromCommaDelineated } from 'payload/utilities'
+import { createArrayFromCommaDelineated } from '@stigma-io/payload/utilities'
 
 type SanitizeQueryValueArgs = {
   field: Field | TabAsField

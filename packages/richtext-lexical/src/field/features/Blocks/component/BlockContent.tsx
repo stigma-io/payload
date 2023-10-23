@@ -1,14 +1,18 @@
-import type { Block, Data, Fields } from 'payload/types'
+import type { Block, Data, Fields } from '@stigma-io/payload/types'
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import isDeepEqual from 'deep-equal'
 import { $getNodeByKey } from 'lexical'
-import { Button, ErrorPill, Pill } from 'payload/components'
-import { Collapsible } from 'payload/components/elements'
-import { SectionTitle } from 'payload/components/fields/Blocks'
-import { RenderFields, createNestedFieldPath, useFormSubmitted } from 'payload/components/forms'
-import { useDocumentInfo } from 'payload/components/utilities'
-import { getTranslation } from 'payload/utilities'
+import { Button, ErrorPill, Pill } from '@stigma-io/payload/components'
+import { Collapsible } from '@stigma-io/payload/components/elements'
+import { SectionTitle } from '@stigma-io/payload/components/fields/Blocks'
+import {
+  RenderFields,
+  createNestedFieldPath,
+  useFormSubmitted,
+} from '@stigma-io/payload/components/forms'
+import { useDocumentInfo } from '@stigma-io/payload/components/utilities'
+import { getTranslation } from '@stigma-io/payload/utilities'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 

@@ -1,5 +1,5 @@
 {
-  "name": "@payloadcms/db-mongodb",
+  "name": "@stigma-io/payload-db-mongodb",
   "version": "1.0.4",
   "description": "The officially supported MongoDB database adapter for Payload",
   "repository": "https://github.com/payloadcms/payload",
@@ -12,13 +12,6 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "pnpm build:swc && pnpm build:types",
-    "build:swc": "swc ./src -d ./dist --config-file .swcrc",
-    "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "clean": "rimraf {dist,*.tsbuildinfo}",
-    "prepublishOnly": "pnpm clean && pnpm build"
-  },
   "dependencies": {
     "bson-objectid": "2.0.4",
     "deepmerge": "4.3.1",
@@ -30,22 +23,26 @@
     "uuid": "9.0.0"
   },
   "devDependencies": {
-    "@payloadcms/eslint-config": "workspace:*",
     "@types/mongoose-aggregate-paginate-v2": "1.0.9",
     "mongodb-memory-server": "8.13.0",
-    "payload": "workspace:*"
+    "@payloadcms/eslint-config": "1.0.0",
+    "@stigma-io/payload": "2.0.12"
   },
   "peerDependencies": {
     "payload": "^2.0.0"
   },
   "publishConfig": {
-    "main": "./dist/index.js",
-    "registry": "https://registry.npmjs.org/",
-    "types": "./dist/index.d.ts"
+    "registry": "https://registry.npmjs.org/"
   },
   "files": [
     "dist",
     "mock.js",
     "predefinedMigrations"
-  ]
+  ],
+  "scripts": {
+    "build": "pnpm build:swc && pnpm build:types",
+    "build:swc": "swc ./src -d ./dist --config-file .swcrc",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "clean": "rimraf {dist,*.tsbuildinfo}"
+  }
 }

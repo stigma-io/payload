@@ -1,6 +1,6 @@
-import type { PayloadRequest } from 'payload/types'
+import type { PayloadRequest } from '@stigma-io/payload/types'
 
-import { readMigrationFiles } from 'payload/database'
+import { readMigrationFiles } from '@stigma-io/payload/database'
 import prompts from 'prompts'
 
 import type { MongooseAdapter } from '.'

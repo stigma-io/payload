@@ -1,7 +1,7 @@
-import type { FindGlobal } from 'payload/database'
-import type { PayloadRequest } from 'payload/types'
+import type { FindGlobal } from '@stigma-io/payload/database'
+import type { PayloadRequest } from '@stigma-io/payload/types'
 
-import { combineQueries } from 'payload/database'
+import { combineQueries } from '@stigma-io/payload/database'
 
 import type { MongooseAdapter } from '.'
 
