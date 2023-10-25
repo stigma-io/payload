@@ -1,5 +1,5 @@
 {
-  "name": "payload",
+  "name": "@stigma-io/payload",
   "version": "2.0.13",
   "description": "Node, React and MongoDB Headless CMS and Application Framework",
   "license": "MIT",

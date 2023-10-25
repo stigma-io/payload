@@ -1,5 +1,5 @@
 {
-  "name": "@payloadcms/richtext-lexical",
+  "name": "@stigma-io/payload-richtext-lexical",
   "version": "0.1.15",
   "description": "The officially supported Lexical richtext adapter for Payload",
   "repository": "https://github.com/payloadcms/payload",
@@ -54,10 +54,10 @@
     "@payloadcms/eslint-config": "workspace:*",
     "@types/node": "20.6.2",
     "@types/react": "18.2.15",
-    "payload": "workspace:*"
+    "@stigma-io/payload": "workspace:*"
   },
   "peerDependencies": {
-    "payload": "^2.0.6"
+    "@stigma-io/payload": "^2.0.6"
   },
   "exports": {
     ".": {

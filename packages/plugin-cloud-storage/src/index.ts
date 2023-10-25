@@ -1,1 +1,0 @@
-export { cloudStorage } from './plugin'

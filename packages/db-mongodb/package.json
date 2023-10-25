@@ -12,6 +12,13 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "pnpm build:swc && pnpm build:types",
+    "build:swc": "swc ./src -d ./dist --config-file .swcrc",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "clean": "rimraf {dist,*.tsbuildinfo}",
+    "prepublishOnly": "pnpm clean && pnpm build"
+  },
   "dependencies": {
     "bson-objectid": "2.0.4",
     "deepmerge": "4.3.1",
@@ -23,26 +30,22 @@
     "uuid": "9.0.0"
   },
   "devDependencies": {
+    "@payloadcms/eslint-config": "workspace:*",
     "@types/mongoose-aggregate-paginate-v2": "1.0.9",
     "mongodb-memory-server": "8.13.0",
-    "@payloadcms/eslint-config": "1.0.0",
-    "@stigma-io/payload": "2.0.12"
+    "@stigma-io/payload": "workspace:*"
   },
   "peerDependencies": {
     "payload": "^2.0.0"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "main": "./dist/index.js",
+    "registry": "https://registry.npmjs.org/",
+    "types": "./dist/index.d.ts"
   },
   "files": [
     "dist",
     "mock.js",
     "predefinedMigrations"
-  ],
-  "scripts": {
-    "build": "pnpm build:swc && pnpm build:types",
-    "build:swc": "swc ./src -d ./dist --config-file .swcrc",
-    "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "clean": "rimraf {dist,*.tsbuildinfo}"
-  }
+  ]
 }
