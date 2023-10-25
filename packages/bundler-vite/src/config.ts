@@ -7,10 +7,14 @@ import image from '@rollup/plugin-image'
 import react from '@vitejs/plugin-react'
 import getPort from 'get-port'
 import path from 'path'
+
+import dirname from 'es-dirname'
 import virtual from 'vite-plugin-virtual'
 
-const mockModulePath = path.resolve(__dirname, './mocks/emptyModule.js')
-const mockDotENVPath = path.resolve(__dirname, './mocks/dotENV.js')
+const __dirname = dirname()
+
+const mockModulePath = `${__dirname}/mocks/emptyModule.js`
+const mockDotENVPath = `${__dirname}/mocks/dotENV.js`
 
 export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<InlineConfig> => {
   const { createLogger, searchForWorkspaceRoot } = await import('vite')
@@ -28,11 +32,11 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
   const absoluteAliases = {}
 
   const alias = [
-    { find: '@stigma-io/payload-bundler-vite', replacement: path.resolve(__dirname, '../mock.js') },
-    { find: '@stigma-io/payload-db-mongodb', replacement: path.resolve(__dirname, '../mock.js') },
-    { find: 'path', replacement: require.resolve('path-browserify') },
+    { find: '@stigma-io/payload-bundler-vite', replacement: `${__dirname}/../mock.js` },
+    { find: '@stigma-io/payload-db-mongodb', replacement: `${__dirname}/../mock.js` },
+    { find: 'path', replacement: 'path-browserify' },
     { find: 'payload-config', replacement: payloadConfig.paths.rawConfig },
-    { find: /payload$/, replacement: mockModulePath },
+    { find: /@stigma-io\/payload$/, replacement: mockModulePath },
     { find: '~payload-user-css', replacement: payloadConfig.admin.css },
     { find: '~react-toastify', replacement: 'react-toastify' },
     { find: 'dotenv', replacement: mockDotENVPath },
@@ -52,7 +56,7 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
         } else {
           alias.push({
             find: source,
-            replacement: target,
+            replacement: target as string,
           })
         }
       })
@@ -93,7 +97,7 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
         // from pre-bundling
         '@stigma-io/payload-bundler-vite',
       ],
-      include: ['@stigma-io/payload/components/root', 'react-dom/client'],
+      // include: ['@stigma-io/payload/components/root', 'react-dom/client'],
     },
     plugins: [
       {
@@ -132,10 +136,13 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
     resolve: {
       alias,
     },
-    root: path.resolve(__dirname, './'),
+    root: `${__dirname}`,
     server: {
       fs: {
-        allow: [searchForWorkspaceRoot(process.cwd()), path.resolve(__dirname, '../../payload')],
+        allow: [
+          searchForWorkspaceRoot(process.cwd()),
+          `${__dirname}/../..`, // packages folder
+        ],
       },
       hmr: {
         port: hmrPort,

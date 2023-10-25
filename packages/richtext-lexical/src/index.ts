@@ -157,7 +157,7 @@ export type { UploadFeatureProps } from './field/features/Upload'
 export {
   $createUploadNode,
   $isUploadNode,
-  RawUploadPayload,
+  type RawUploadPayload,
   type SerializedUploadNode,
   type UploadData,
   UploadNode,

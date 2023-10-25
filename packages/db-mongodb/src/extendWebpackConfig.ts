@@ -2,8 +2,12 @@ import type { SanitizedConfig } from '@stigma-io/payload/config'
 
 import path from 'path'
 
+import dirname from 'es-dirname'
+
+const __dirname = dirname()
+
 export const webpack = (config) => {
-  const aliasPath = path.resolve(__dirname, '../mock.js')
+  const aliasPath = `${__dirname}/../mock.js`
 
   return {
     ...config,
@@ -11,7 +15,7 @@ export const webpack = (config) => {
       ...(config.resolve || {}),
       alias: {
         ...(config.resolve?.alias || {}),
-        '@payloadcms/db-mongodb': aliasPath,
+        '@stigma-io/payload-db-mongodb': aliasPath,
       },
     },
   }

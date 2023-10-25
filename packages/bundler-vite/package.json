@@ -12,6 +12,13 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
   "scripts": {
     "build": "pnpm copyfiles && pnpm build:swc && pnpm build:types && pnpm copyTsx",
     "build:swc": "swc ./src -d ./dist --config-file .swcrc",
@@ -26,6 +33,7 @@
     "@vitejs/plugin-react": "^4.0.4",
     "compression": "1.7.4",
     "connect-history-api-fallback": "1.6.0",
+    "es-dirname": "^0.1.0",
     "get-port": "5.1.1",
     "path-browserify": "1.0.1",
     "vite": "^4.5.0",

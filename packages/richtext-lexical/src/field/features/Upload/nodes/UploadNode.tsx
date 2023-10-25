@@ -15,7 +15,7 @@ import * as React from 'react'
 // @ts-expect-error TypeScript being dumb
 const RawUploadComponent = React.lazy(async () => await import('../component'))
 
-export interface RawUploadPayload {
+export type RawUploadPayload = {
   fields: {
     // unknown, custom fields:
     [key: string]: unknown
