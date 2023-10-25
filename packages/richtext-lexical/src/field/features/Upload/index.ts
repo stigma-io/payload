@@ -1,6 +1,6 @@
 import type { Field } from '@stigma-io/payload/types'
 
-import payload from 'payload'
+import payload from '@stigma-io/payload'
 
 import type { HTMLConverter } from '../converters/html/converter/types'
 import type { FeatureProvider } from '../types'

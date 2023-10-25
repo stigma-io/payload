@@ -49,10 +49,9 @@ import type { TypeWithVersion } from './versions/types'
 import { decrypt, encrypt } from './auth/crypto'
 import localOperations from './collections/operations/local'
 import findConfig from './config/find'
+import loadConfig from './nest/config/load'
 import localGlobalOperations from './globals/operations/local'
-import registerGraphQLSchema from './graphql/registerSchema'
 import Logger from './utilities/logger'
-import { serverInit as serverInitTelemetry } from './utilities/telemetry/events/serverInit'
 
 /**
  * @description Payload
@@ -320,6 +319,7 @@ export class BasePayload<TGeneratedTypes extends GeneratedTypes> {
 
     if (options.config) {
       this.config = await options.config
+
       const configPath = findConfig()
 
       this.config = {
@@ -331,8 +331,6 @@ export class BasePayload<TGeneratedTypes extends GeneratedTypes> {
         },
       }
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-      const loadConfig = require('./config/load').default
       this.config = await loadConfig(this.logger)
     }
 
@@ -345,7 +343,7 @@ export class BasePayload<TGeneratedTypes extends GeneratedTypes> {
       }
     })
 
-    this.db = this.config.db({ payload: this })
+    this.db = this.config.db({ payload: this }) as unknown as DatabaseAdapter // hack type
     this.db.payload = this
 
     if (this.db?.init) {
@@ -355,22 +353,7 @@ export class BasePayload<TGeneratedTypes extends GeneratedTypes> {
     if (!options.disableDBConnect && this.db.connect) {
       await this.db.connect(this)
     }
-
     this.logger.info('Starting Payload...')
-
-    // Configure email service
-    /*const emailOptions = options.email ? { ...options.email } : this.config.email
-    if (options.email && this.config.email) {
-      this.logger.warn(
-        'Email options provided in both init options and config. Using init options.',
-      )
-    }*/
-
-    if (!this.config.graphQL.disable) {
-      registerGraphQLSchema(this)
-    }
-
-    serverInitTelemetry(this)
 
     if (!options.disableOnInit) {
       if (typeof options.onInit === 'function') await options.onInit(this)

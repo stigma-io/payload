@@ -1,5 +1,5 @@
 'use client'
-import type { SanitizedCollectionConfig } from 'payload/types'
+import type { SanitizedCollectionConfig } from '@stigma-io/payload/types'
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection'

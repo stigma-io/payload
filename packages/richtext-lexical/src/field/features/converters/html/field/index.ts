@@ -1,5 +1,5 @@
 import type { SerializedEditorState } from 'lexical'
-import type { RichTextField, TextField } from 'payload/types'
+import type { RichTextField, TextField } from '@stigma-io/payload/types'
 
 import type { LexicalRichTextAdapter } from '../../../../../index'
 import type { AdapterProps } from '../../../../../types'
