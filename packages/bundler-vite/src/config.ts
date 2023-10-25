@@ -16,6 +16,11 @@ const __dirname = dirname()
 const mockModulePath = `${__dirname}/mocks/emptyModule.js`
 const mockDotENVPath = `${__dirname}/mocks/dotENV.js`
 
+import Module from 'node:module'
+
+// @ts-ignore
+const requireLegacy = Module.createRequire(import.meta.url)
+
 export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<InlineConfig> => {
   const { createLogger, searchForWorkspaceRoot } = await import('vite')
 
@@ -34,7 +39,7 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
   const alias = [
     { find: '@stigma-io/payload-bundler-vite', replacement: `${__dirname}/../mock.js` },
     { find: '@stigma-io/payload-db-mongodb', replacement: `${__dirname}/../mock.js` },
-    { find: 'path', replacement: 'path-browserify' },
+    { find: 'path', replacement: requireLegacy.resolve('path-browserify') },
     { find: 'payload-config', replacement: payloadConfig.paths.rawConfig },
     { find: /@stigma-io\/payload$/, replacement: mockModulePath },
     { find: '~payload-user-css', replacement: payloadConfig.admin.css },
