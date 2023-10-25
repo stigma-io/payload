@@ -359,12 +359,12 @@ export class BasePayload<TGeneratedTypes extends GeneratedTypes> {
     this.logger.info('Starting Payload...')
 
     // Configure email service
-    const emailOptions = options.email ? { ...options.email } : this.config.email
+    /*const emailOptions = options.email ? { ...options.email } : this.config.email
     if (options.email && this.config.email) {
       this.logger.warn(
         'Email options provided in both init options and config. Using init options.',
       )
-    }
+    }*/
 
     if (!this.config.graphQL.disable) {
       registerGraphQLSchema(this)
