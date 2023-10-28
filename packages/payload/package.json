@@ -19,6 +19,11 @@
       "require": "./src/exports/scss.scss",
       "default": "./src/exports/scss.scss"
     },
+    "./dist/admin/*": {
+      "import": "./src/admin/*.*",
+      "require": "./dist/admin/*.js",
+      "types": "./dist/admin/*.d.ts"
+    },
     "./*": {
       "import": "./src/exports/*.ts",
       "require": "./src/exports/*.ts",

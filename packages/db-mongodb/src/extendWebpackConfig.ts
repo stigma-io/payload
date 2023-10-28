@@ -7,7 +7,7 @@ import dirname from 'es-dirname'
 const __dirname = dirname()
 
 export const webpack = (config) => {
-  const aliasPath = `${__dirname}/../mock.js`
+  const aliasPath = path.resolve(`${__dirname}/../mock.js`)
 
   return {
     ...config,

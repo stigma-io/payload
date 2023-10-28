@@ -1,5 +1,5 @@
 import queryString from 'qs'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { MemoExoticComponent, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 
@@ -22,6 +22,7 @@ import RenderCustomComponent from '../../../utilities/RenderCustomComponent'
 import NotFound from '../../NotFound'
 import DefaultEdit from './Default'
 import formatFields from './formatFields'
+import { isMemoComponent } from '../../../../../utilities/isMemoComponent'
 
 const EditView: React.FC<IndexProps> = (props) => {
   const { collection: incomingCollection, isEditing } = props
@@ -172,7 +173,13 @@ const EditView: React.FC<IndexProps> = (props) => {
     <EditDepthContext.Provider value={1}>
       <FormQueryParams.Provider value={{ formQueryParams, setFormQueryParams }}>
         <RenderCustomComponent
-          CustomComponent={typeof Edit === 'function' ? Edit : undefined}
+          CustomComponent={
+            typeof Edit === 'function'
+              ? (Edit as React.ComponentType<any>)
+              : isMemoComponent(Edit?.Default)
+              ? (Edit.Default as MemoExoticComponent<any>)
+              : undefined
+          }
           DefaultComponent={DefaultEdit}
           componentProps={componentProps}
         />

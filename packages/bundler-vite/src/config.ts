@@ -17,6 +17,7 @@ const mockModulePath = `${__dirname}/mocks/emptyModule.js`
 const mockDotENVPath = `${__dirname}/mocks/dotENV.js`
 
 import Module from 'node:module'
+import process from 'process'
 
 // @ts-ignore
 const requireLegacy = Module.createRequire(import.meta.url)
@@ -45,6 +46,10 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
     { find: '~payload-user-css', replacement: payloadConfig.admin.css },
     { find: '~react-toastify', replacement: 'react-toastify' },
     { find: 'dotenv', replacement: mockDotENVPath },
+    {
+      find: /@stigma-io\/payload\/dist/,
+      replacement: `${process.cwd()}/node_modules/@stigma-io/payload/src`,
+    },
   ]
 
   if (payloadConfig.admin.webpack && typeof payloadConfig.admin.webpack === 'function') {
