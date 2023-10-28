@@ -1,25 +1,34 @@
 import type { TypeWithID } from './collections/config/types'
-import { InitOptions } from 'payload/config'
+import type { InitOptions } from './config/types'
+import type { BaseDatabaseAdapter } from './database/types'
 import type { RequestContext } from './express/types'
-import { initHTTP } from './payload.initHTTP'
-import { BasePayload, Payload as LocalPayload } from './payload'
 import type { TypeWithID as GlobalTypeWithID } from './globals/config/types'
+import type { Payload as LocalPayload } from './payload'
+
+import { initHTTP } from './initHTTP'
+import { BasePayload } from './payload'
 
 export { getPayload } from './payload'
 
 import 'isomorphic-fetch'
-import { BaseDatabaseAdapter } from './database/types'
 
 export class Payload extends BasePayload<GeneratedTypes> {
   async init(options: InitOptions): Promise<LocalPayload> {
     const payload = await initHTTP(options)
     Object.assign(this, payload)
 
+    if (!options.disableOnInit) {
+      if (typeof options.onInit === 'function') await options.onInit(this)
+      if (typeof this.config.onInit === 'function') await this.config.onInit(this)
+    }
+
     return payload
   }
 }
 
 const payload = new Payload()
+
+export default payload
 
 type GeneratedTypes = {
   collections: {
@@ -29,8 +38,6 @@ type GeneratedTypes = {
     [slug: number | string | symbol]: GlobalTypeWithID & Record<string, unknown>
   }
 }
-
-export default payload
 
 type DatabaseAdapter = BaseDatabaseAdapter
 

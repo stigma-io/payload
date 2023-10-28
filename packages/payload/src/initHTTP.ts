@@ -1,19 +1,26 @@
-import express, { NextFunction, Response } from 'express'
-import { InitOptions } from 'payload/config'
+/* eslint-disable no-param-reassign */
+import type { NextFunction, Response } from 'express'
 
-import authenticate from './nest/express/middleware/authenticate'
-import expressMiddleware from './nest/express/middleware'
-import initAdmin from './express/admin'
+import express from 'express'
+
+import type { InitOptions } from './config/types'
+import type { PayloadRequest } from './express/types'
+import type { Payload } from './payload'
+
 import initAuth from './nest/auth/init'
 import access from './auth/requestHandlers/access'
-import initCollectionsHTTP from './collections/initHTTP'
-import initGlobalsHTTP from './globals/initHTTP'
-import initStatic from './express/static'
-import errorHandler from './express/middleware/errorHandler'
-import { PayloadRequest } from './express/types'
 import { getDataLoader } from './collections/dataloader'
+import initCollectionsHTTP from './collections/initHTTP'
+import initAdmin from './express/admin'
+import expressMiddleware from './nest/express/middleware'
+import authenticate from './nest/express/middleware/authenticate'
+import errorHandler from './express/middleware/errorHandler'
+
 import mountEndpoints from './express/mountEndpoints'
-import { getPayload, Payload } from './payload'
+import initStatic from './express/static'
+import initGlobalsHTTP from './globals/initHTTP'
+
+import { getPayload } from './payload'
 
 export const initHTTP = async (incomingOptions: InitOptions): Promise<Payload> => {
   const options = { ...incomingOptions }
@@ -56,10 +63,7 @@ export const initHTTP = async (incomingOptions: InitOptions): Promise<Payload> =
     payload.express.set('trust proxy', 1)
   }
 
-  const { NODE_ENV } = process.env
-  // process.env.NODE_ENV='production';
   await initAdmin(payload)
-  process.env.NODE_ENV = NODE_ENV
 
   payload.router.get('/access', access)
 
