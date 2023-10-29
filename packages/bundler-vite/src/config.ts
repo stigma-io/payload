@@ -151,7 +151,7 @@ export const getViteConfig = async (payloadConfig: SanitizedConfig): Promise<Inl
       fs: {
         allow: [
           searchForWorkspaceRoot(process.cwd()),
-          `${__dirname}/../..`, // packages folder
+          path.resolve(`${__dirname}/../..`), // packages folder
         ],
       },
       hmr: {

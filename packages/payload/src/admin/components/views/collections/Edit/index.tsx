@@ -174,10 +174,8 @@ const EditView: React.FC<IndexProps> = (props) => {
       <FormQueryParams.Provider value={{ formQueryParams, setFormQueryParams }}>
         <RenderCustomComponent
           CustomComponent={
-            typeof Edit === 'function'
+            typeof Edit === 'function' || isMemoComponent(Edit)
               ? (Edit as React.ComponentType<any>)
-              : isMemoComponent(Edit?.Default)
-              ? (Edit.Default as MemoExoticComponent<any>)
               : undefined
           }
           DefaultComponent={DefaultEdit}

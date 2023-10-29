@@ -7,6 +7,7 @@ import { LivePreviewView } from '../../../LivePreview'
 import VersionView from '../../../Version/Version'
 import VersionsView from '../../../Versions'
 import { DefaultCollectionEdit } from '../Default/index'
+import { isMemoComponent } from '../../../../../../utilities/isMemoComponent'
 
 export type collectionViewType =
   | 'API'
@@ -54,6 +55,8 @@ export const CustomCollectionComponent = (
         typeof Edit[view].Component === 'function'
       ? // @ts-ignore
         Edit[view].Component
+      : isMemoComponent(Edit[view])
+      ? Edit[view]
       : defaultCollectionViews[view]
 
   if (Component) {
