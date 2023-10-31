@@ -55,7 +55,7 @@ export const CustomCollectionComponent = (
         typeof Edit[view].Component === 'function'
       ? // @ts-ignore
         Edit[view].Component
-      : isMemoComponent(Edit[view])
+      : typeof Edit?.[view] === 'object' && isMemoComponent(Edit[view])
       ? Edit[view]
       : defaultCollectionViews[view]
 
