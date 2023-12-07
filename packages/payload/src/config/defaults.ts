@@ -1,6 +1,6 @@
 import dirname from 'es-dirname'
 
-const __dirname = dirname()
+const ___dirname = dirname()
 import type { Config } from './types'
 
 export const defaults: Omit<Config, 'db' | 'editor'> = {
@@ -8,11 +8,11 @@ export const defaults: Omit<Config, 'db' | 'editor'> = {
     avatar: 'default',
     buildPath: `${process.cwd()}/build`,
     components: {},
-    css: `${__dirname}/../admin/scss/custom.css`,
+    css: `${___dirname}/../admin/scss/custom.css`,
     dateFormat: 'MMMM do yyyy, h:mm a',
     disable: false,
     inactivityRoute: '/logout-inactivity',
-    indexHTML: `${__dirname}/../admin/index.html`,
+    indexHTML: `${___dirname}/../admin/index.html`,
     logoutRoute: '/logout',
     meta: {
       titleSuffix: '- Payload',
