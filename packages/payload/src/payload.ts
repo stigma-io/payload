@@ -49,8 +49,8 @@ import type { TypeWithVersion } from './versions/types'
 import { decrypt, encrypt } from './auth/crypto'
 import localOperations from './collections/operations/local'
 import findConfig from './config/find'
-import loadConfig from './nest/config/load'
 import localGlobalOperations from './globals/operations/local'
+import loadConfig from './nest/config/load'
 import Logger from './utilities/logger'
 
 /**
