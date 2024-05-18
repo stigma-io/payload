@@ -22,19 +22,43 @@ const baseClass = 'where-builder'
 
 const reduceFields = (fields, i18n) =>
   flattenTopLevelFields(fields).reduce((reduced, field) => {
+    let operators = []
+
     if (typeof fieldTypes[field.type] === 'object') {
+      if (typeof fieldTypes[field.type].operators === 'function') {
+        operators = fieldTypes[field.type].operators(
+          'hasMany' in field && field.hasMany ? true : false,
+        )
+      } else {
+        operators = fieldTypes[field.type].operators
+      }
+
+      const operatorKeys = new Set()
+      const filteredOperators = operators.reduce((acc, operator) => {
+        if (!operatorKeys.has(operator.value)) {
+          operatorKeys.add(operator.value)
+          return [
+            ...acc,
+            {
+              ...operator,
+              label: i18n.t(`operators:${operator.label}`),
+            },
+          ]
+        }
+        return acc
+      }, [])
+
       const formattedField = {
         label: getTranslation(field.label || field.name, i18n),
         value: field.name,
         ...fieldTypes[field.type],
-        operators: fieldTypes[field.type].operators.map((operator) => ({
-          ...operator,
-          label: i18n.t(`operators:${operator.label}`),
-        })),
+        operators: filteredOperators,
         props: {
           ...field,
         },
       }
+
+      if (field.admin?.disableListFilter) return reduced
 
       return [...reduced, formattedField]
     }
@@ -173,7 +197,7 @@ const WhereBuilder: React.FC<Props> = (props) => {
             iconStyle="with-border"
             onClick={() => {
               if (reducedFields.length > 0)
-                dispatchConditions({ field: reducedFields[0].value, type: 'add' })
+                dispatchConditions({ type: 'add', field: reducedFields[0].value })
             }}
           >
             {t('or')}
@@ -191,7 +215,7 @@ const WhereBuilder: React.FC<Props> = (props) => {
             iconStyle="with-border"
             onClick={() => {
               if (reducedFields.length > 0)
-                dispatchConditions({ field: reducedFields[0].value, type: 'add' })
+                dispatchConditions({ type: 'add', field: reducedFields[0].value })
             }}
           >
             {t('addFilter')}

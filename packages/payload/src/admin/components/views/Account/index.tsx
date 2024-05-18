@@ -17,7 +17,6 @@ import { useLocale } from '../../utilities/Locale'
 import { usePreferences } from '../../utilities/Preferences'
 import RenderCustomComponent from '../../utilities/RenderCustomComponent'
 import DefaultAccount from './Default'
-import { isMemoComponent } from '../../../../utilities/isMemoComponent'
 
 const AccountView: React.FC = () => {
   const { state: locationState } = useLocation<{ data: unknown }>()
@@ -26,22 +25,26 @@ const AccountView: React.FC = () => {
   const { user } = useAuth()
   const userRef = useRef(user)
   const [internalState, setInternalState] = useState<Fields>()
-  const { id, docPermissions, getDocPermissions, getDocPreferences, preferencesKey, slug } =
-    useDocumentInfo()
+  const {
+    id,
+    slug,
+    collection,
+    docPermissions,
+    getDocPermissions,
+    getDocPreferences,
+    preferencesKey,
+  } = useDocumentInfo()
   const { getPreference } = usePreferences()
 
   const config = useConfig()
 
   const {
     admin: { components: { views: { Account: CustomAccountComponent } = {} } = {} },
-    collections,
     routes: { api },
     serverURL,
   } = useConfig()
 
   const { t } = useTranslation('authentication')
-
-  const collection = collections.find((coll) => coll.slug === slug)
 
   const { fields } = collection || {}
 
@@ -61,7 +64,7 @@ const AccountView: React.FC = () => {
 
   const onSave = React.useCallback(
     async (json: any) => {
-      getDocPermissions()
+      await getDocPermissions()
 
       const preferences = await getDocPreferences()
 
@@ -148,9 +151,7 @@ const AccountView: React.FC = () => {
   return (
     <RenderCustomComponent
       CustomComponent={
-        typeof CustomAccountComponent === 'function' || isMemoComponent(CustomAccountComponent)
-          ? (CustomAccountComponent as React.ComponentType<any>)
-          : undefined
+        typeof CustomAccountComponent === 'function' ? CustomAccountComponent : undefined
       }
       DefaultComponent={DefaultAccount}
       componentProps={componentProps}

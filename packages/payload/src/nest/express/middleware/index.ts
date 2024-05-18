@@ -46,7 +46,7 @@ const middleware = (payload: Payload): any => {
     qsMiddleware({ depth: 10, arrayLimit: 1000 }),
     bodyParser.urlencoded({ extended: true }),
     compression(payload.config.express.compression),
-    localizationMiddleware(payload.config.localization),
+    localizationMiddleware,
     express.json(payload.config.express.json),
     fileUpload({
       parseNested: true,

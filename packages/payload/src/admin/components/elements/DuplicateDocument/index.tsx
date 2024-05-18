@@ -17,7 +17,7 @@ import './index.scss'
 
 const baseClass = 'duplicate'
 
-const Duplicate: React.FC<Props> = ({ id, collection, slug }) => {
+const Duplicate: React.FC<Props> = ({ id, slug, collection }) => {
   const { push } = useHistory()
   const modified = useFormModified()
   const { toggleModal } = useModal()
@@ -31,12 +31,15 @@ const Duplicate: React.FC<Props> = ({ id, collection, slug }) => {
     routes: { admin },
   } = useConfig()
   const [hasClicked, setHasClicked] = useState<boolean>(false)
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const { i18n, t } = useTranslation('general')
 
   const modalSlug = `duplicate-${id}`
 
   const handleClick = useCallback(
     async (override = false) => {
+      if (isSubmitting) return
+      setIsSubmitting(true)
       setHasClicked(true)
 
       if (modified && !override) {
@@ -90,36 +93,41 @@ const Duplicate: React.FC<Props> = ({ id, collection, slug }) => {
         if (result.status === 201 || result.status === 200) {
           return json.doc.id
         }
-        json.errors.forEach((error) => toast.error(error.message))
+
+        // only show the error if this is the initial request failing
+        if (!duplicateID) {
+          json.errors.forEach((error) => toast.error(error.message))
+        }
         return null
       }
 
-      let duplicateID
+      let duplicateID: string
       let abort = false
+      const localeErrors = []
 
       if (localization) {
         await localization.localeCodes.reduce(async (priorLocalePatch, locale) => {
           await priorLocalePatch
           if (abort) return
-          duplicateID = await saveDocument({ id, duplicateID, locale })
+          const localeResult = await saveDocument({
+            id,
+            duplicateID,
+            locale,
+          })
+          duplicateID = localeResult || duplicateID
+          if (duplicateID && !localeResult) {
+            localeErrors.push(locale)
+          }
           if (!duplicateID) {
             abort = true
           }
         }, Promise.resolve())
-
-        if (abort && duplicateID) {
-          // delete the duplicate doc to prevent incomplete
-          await requests.delete(`${serverURL}${api}/${slug}/${duplicateID}`, {
-            headers: {
-              'Accept-Language': i18n.language,
-            },
-          })
-        }
       } else {
         duplicateID = await saveDocument({ id })
       }
 
       if (!duplicateID) {
+        // document was not saved, error toast was displayed
         return
       }
 
@@ -128,7 +136,18 @@ const Duplicate: React.FC<Props> = ({ id, collection, slug }) => {
         { autoClose: 3000 },
       )
 
+      if (localeErrors.length > 0) {
+        toast.error(
+          `
+          ${t('error:localesNotSaved_other', { count: localeErrors.length })}
+          ${localeErrors.join(', ')}
+          `,
+          { autoClose: 5000 },
+        )
+      }
+
       setModified(false)
+      setIsSubmitting(false)
 
       setTimeout(() => {
         push({
@@ -155,13 +174,17 @@ const Duplicate: React.FC<Props> = ({ id, collection, slug }) => {
   )
 
   const confirm = useCallback(async () => {
-    setHasClicked(false)
     await handleClick(true)
+    setHasClicked(false)
   }, [handleClick])
 
   return (
     <React.Fragment>
-      <PopupList.Button id="action-duplicate" onClick={() => handleClick(false)}>
+      <PopupList.Button
+        disabled={isSubmitting}
+        id="action-duplicate"
+        onClick={() => handleClick(false)}
+      >
         {t('duplicate')}
       </PopupList.Button>
       {modified && hasClicked && (

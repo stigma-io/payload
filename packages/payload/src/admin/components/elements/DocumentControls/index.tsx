@@ -5,6 +5,7 @@ import type { CollectionPermission, GlobalPermission } from '../../../../auth'
 import type { SanitizedCollectionConfig } from '../../../../collections/config/types'
 import type { SanitizedGlobalConfig } from '../../../../globals/config/types'
 
+import { getTranslation } from '../../../../utilities/getTranslation'
 import { formatDate } from '../../../utilities/formatDate'
 import { useConfig } from '../../utilities/Config'
 import { useDocumentInfo } from '../../utilities/DocumentInfo'
@@ -33,7 +34,7 @@ export const DocumentControls: React.FC<{
   id?: string
   isAccountView?: boolean
   isEditing?: boolean
-  permissions?: CollectionPermission | GlobalPermission | null
+  permissions?: CollectionPermission | GlobalPermission
 }> = (props) => {
   const {
     id,
@@ -56,7 +57,18 @@ export const DocumentControls: React.FC<{
 
   const { i18n, t } = useTranslation('general')
 
-  const showDotMenu = Boolean(collection && id && !disableActions)
+  const hasCreatePermission = 'create' in permissions && permissions.create?.permission
+  const hasDeletePermission = 'delete' in permissions && permissions.delete?.permission
+
+  const showDotMenu = Boolean(
+    collection && id && !disableActions && (hasCreatePermission || hasDeletePermission),
+  )
+
+  const collectionLabel = () => {
+    const label = collection?.labels?.singular
+    if (!label) return t('document')
+    return typeof label === 'string' ? label : getTranslation(label, i18n)
+  }
 
   return (
     <Gutter className={baseClass}>
@@ -66,12 +78,7 @@ export const DocumentControls: React.FC<{
             {collection && !isEditing && !isAccountView && (
               <li className={`${baseClass}__list-item`}>
                 <p className={`${baseClass}__value`}>
-                  {t('creatingNewLabel', {
-                    label:
-                      typeof collection?.labels?.singular === 'string'
-                        ? collection.labels.singular
-                        : 'document',
-                  })}
+                  {t('creatingNewLabel', { label: collectionLabel() })}
                 </p>
               </li>
             )}
@@ -203,7 +210,7 @@ export const DocumentControls: React.FC<{
               verticalAlign="bottom"
             >
               <PopupList.ButtonGroup>
-                {'create' in permissions && permissions?.create?.permission && (
+                {hasCreatePermission && (
                   <React.Fragment>
                     <PopupList.Button
                       id="action-create"
@@ -217,7 +224,7 @@ export const DocumentControls: React.FC<{
                     )}
                   </React.Fragment>
                 )}
-                {'delete' in permissions && permissions?.delete?.permission && id && (
+                {hasDeletePermission && (
                   <DeleteDocument buttonId="action-delete" collection={collection} id={id} />
                 )}
               </PopupList.ButtonGroup>

@@ -32,7 +32,7 @@ export const EditUpload: React.FC<{
   imageCacheTag?: string
   showCrop?: boolean
   showFocalPoint?: boolean
-}> = ({ fileName, fileSrc, imageCacheTag, showCrop, showFocalPoint }) => {
+}> = ({ doc, fileName, fileSrc, imageCacheTag, showCrop, showFocalPoint }) => {
   const { closeModal } = useModal()
   const { t } = useTranslation(['general', 'upload'])
   const { formQueryParams, setFormQueryParams } = useFormQueryParams()
@@ -45,10 +45,11 @@ export const EditUpload: React.FC<{
     y: uploadEdits?.crop?.y || 0,
   })
 
-  const [pointPosition, setPointPosition] = useState<{ x: number; y: number }>({
-    x: uploadEdits?.focalPoint?.x || 50,
-    y: uploadEdits?.focalPoint?.y || 50,
+  const [focalPosition, setFocalPosition] = useState<{ x: number; y: number }>({
+    x: uploadEdits?.focalPoint?.x || doc.focalX || 50,
+    y: uploadEdits?.focalPoint?.y || doc.focalY || 50,
   })
+
   const [checkBounds, setCheckBounds] = useState<boolean>(false)
   const [originalHeight, setOriginalHeight] = useState<number>(0)
   const [originalWidth, setOriginalWidth] = useState<number>(0)
@@ -72,10 +73,16 @@ export const EditUpload: React.FC<{
     })
   }
 
-  const fineTuneFocalPoint = ({ coordinate, value }: { coordinate: 'x' | 'y'; value: string }) => {
+  const fineTuneFocalPosition = ({
+    coordinate,
+    value,
+  }: {
+    coordinate: 'x' | 'y'
+    value: string
+  }) => {
     const intValue = parseInt(value)
     if (intValue >= 0 && intValue <= 100) {
-      setPointPosition((prevPosition) => ({ ...prevPosition, [coordinate]: intValue }))
+      setFocalPosition((prevPosition) => ({ ...prevPosition, [coordinate]: intValue }))
     }
   }
 
@@ -83,15 +90,15 @@ export const EditUpload: React.FC<{
     setFormQueryParams({
       ...formQueryParams,
       uploadEdits: {
-        crop: crop ? crop : undefined,
-        focalPoint: pointPosition ? pointPosition : undefined,
+        crop: crop || undefined,
+        focalPoint: focalPosition ? focalPosition : undefined,
       },
     })
     closeModal(editDrawerSlug)
   }
 
   const onDragEnd = React.useCallback(({ x, y }) => {
-    setPointPosition({ x, y })
+    setFocalPosition({ x, y })
     setCheckBounds(false)
   }, [])
 
@@ -104,7 +111,7 @@ export const EditUpload: React.FC<{
       ((boundsRect.left - containerRect.left + boundsRect.width / 2) / containerRect.width) * 100
     const yCenter =
       ((boundsRect.top - containerRect.top + boundsRect.height / 2) / containerRect.height) * 100
-    setPointPosition({ x: xCenter, y: yCenter })
+    setFocalPosition({ x: xCenter, y: yCenter })
   }
 
   const fileSrcToUse = imageCacheTag ? `${fileSrc}?${imageCacheTag}` : fileSrc
@@ -164,7 +171,15 @@ export const EditUpload: React.FC<{
                 />
               </ReactCrop>
             ) : (
-              <img alt={t('upload:setFocalPoint')} ref={imageRef} src={fileSrcToUse} />
+              <img
+                alt={t('upload:setFocalPoint')}
+                onLoad={(e) => {
+                  setOriginalHeight(e.currentTarget.naturalHeight)
+                  setOriginalWidth(e.currentTarget.naturalWidth)
+                }}
+                ref={imageRef}
+                src={fileSrcToUse}
+              />
             )}
             {showFocalPoint && (
               <DraggableElement
@@ -172,7 +187,7 @@ export const EditUpload: React.FC<{
                 checkBounds={showCrop ? checkBounds : false}
                 className={`${baseClass}__focalPoint`}
                 containerRef={focalWrapRef}
-                initialPosition={pointPosition}
+                initialPosition={focalPosition}
                 onDragEnd={onDragEnd}
                 setCheckBounds={showCrop ? setCheckBounds : false}
               >
@@ -243,13 +258,13 @@ export const EditUpload: React.FC<{
                 <div className={`${baseClass}__inputsWrap`}>
                   <Input
                     name="X %"
-                    onChange={(value) => fineTuneFocalPoint({ coordinate: 'x', value })}
-                    value={pointPosition.x.toFixed(0)}
+                    onChange={(value) => fineTuneFocalPosition({ coordinate: 'x', value })}
+                    value={focalPosition.x.toFixed(0)}
                   />
                   <Input
                     name="Y %"
-                    onChange={(value) => fineTuneFocalPoint({ coordinate: 'y', value })}
-                    value={pointPosition.y.toFixed(0)}
+                    onChange={(value) => fineTuneFocalPosition({ coordinate: 'y', value })}
+                    value={focalPosition.y.toFixed(0)}
                   />
                 </div>
               </div>
@@ -273,7 +288,7 @@ const DraggableElement = ({
 }) => {
   const [position, setPosition] = useState({ x: initialPosition.x, y: initialPosition.y })
   const [isDragging, setIsDragging] = useState(false)
-  const dragRef = useRef<HTMLDivElement | undefined>()
+  const dragRef = useRef<HTMLButtonElement | undefined>()
 
   const getCoordinates = React.useCallback(
     (mouseXArg?: number, mouseYArg?: number, recenter?: boolean) => {
@@ -319,7 +334,7 @@ const DraggableElement = ({
 
       return { x, y }
     },
-    [],
+    [boundsRef, containerRef],
   )
 
   const handleMouseDown = (event) => {
@@ -349,7 +364,7 @@ const DraggableElement = ({
       setCheckBounds(false)
       return
     }
-  }, [getCoordinates, isDragging, checkBounds, setCheckBounds, position.x, position.y])
+  }, [getCoordinates, isDragging, checkBounds, setCheckBounds, position.x, position.y, onDragEnd])
 
   React.useEffect(() => {
     setPosition({ x: initialPosition.x, y: initialPosition.y })
@@ -365,15 +380,16 @@ const DraggableElement = ({
         .join(' ')}
       onMouseMove={handleMouseMove}
     >
-      <div
+      <button
         className={[`${baseClass}__draggable`, className].filter(Boolean).join(' ')}
         onMouseDown={handleMouseDown}
         onMouseUp={onDrop}
         ref={dragRef}
-        style={{ left: `${position.x}%`, position: 'absolute', top: `${position.y}%` }}
+        style={{ left: `${position.x}%`, top: `${position.y}%` }}
+        type="button"
       >
         {children}
-      </div>
+      </button>
       <div />
     </div>
   )

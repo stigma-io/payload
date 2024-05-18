@@ -14,8 +14,10 @@ import type {
   DateField,
   EmailField,
   Field,
+  FieldAffectingData,
   GroupField,
   JSONField,
+  NonPresentationalField,
   NumberField,
   PointField,
   RadioField,
@@ -23,16 +25,11 @@ import type {
   RichTextField,
   RowField,
   SelectField,
+  Tab,
   TabsField,
   TextField,
   TextareaField,
   UploadField,
-} from '@stigma-io/payload/types'
-import type {
-  FieldAffectingData,
-  NonPresentationalField,
-  Tab,
-  UnnamedTab,
 } from '@stigma-io/payload/types'
 
 import { Schema } from 'mongoose'
@@ -66,7 +63,15 @@ const formatBaseSchema = (field: FieldAffectingData, buildSchemaOptions: BuildSc
     unique: (!disableUnique && field.unique) || false,
   }
 
-  if (schema.unique && (field.localized || draftsEnabled)) {
+  if (
+    schema.unique &&
+    (field.localized ||
+      draftsEnabled ||
+      (fieldAffectsData(field) &&
+        field.type !== 'group' &&
+        field.type !== 'tab' &&
+        field.required !== true))
+  ) {
     schema.sparse = true
   }
 
@@ -84,7 +89,6 @@ const localizeSchema = (
 ) => {
   if (fieldIsLocalized(entity) && localization && Array.isArray(localization.locales)) {
     return {
-      localized: true,
       type: localization.localeCodes.reduce(
         (localeSchema, locale) => ({
           ...localeSchema,
@@ -94,6 +98,7 @@ const localizeSchema = (
           _id: false,
         },
       ),
+      localized: true,
     }
   }
   return schema
@@ -145,7 +150,6 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
   ) => {
     const baseSchema = {
       ...formatBaseSchema(field, buildSchemaOptions),
-      default: undefined,
       type: [
         buildSchema(config, field.fields, {
           allowIDField: true,
@@ -158,6 +162,7 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
           },
         }),
       ],
+      default: undefined,
     }
 
     schema.add({
@@ -171,8 +176,8 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
     buildSchemaOptions: BuildSchemaOptions,
   ): void => {
     const fieldSchema = {
-      default: undefined,
       type: [new Schema({}, { _id: false, discriminatorKey: 'blockType' })],
+      default: undefined,
     }
 
     schema.add({
@@ -192,12 +197,12 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
       if (field.localized && config.localization) {
         config.localization.localeCodes.forEach((localeCode) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore Possible incorrect typing in mongoose types, this works
+          // @ts-expect-error Possible incorrect typing in mongoose types, this works
           schema.path(`${field.name}.${localeCode}`).discriminator(blockItem.slug, blockSchema)
         })
       } else {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore Possible incorrect typing in mongoose types, this works
+        // @ts-expect-error Possible incorrect typing in mongoose types, this works
         schema.path(field.name).discriminator(blockItem.slug, blockSchema)
       }
     })
@@ -330,14 +335,14 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
     buildSchemaOptions: BuildSchemaOptions,
   ): void => {
     const baseSchema: SchemaTypeOptions<unknown> = {
+      type: {
+        type: String,
+        enum: ['Point'],
+      },
       coordinates: {
+        type: [Number],
         default: field.defaultValue || undefined,
         required: false,
-        type: [Number],
-      },
-      type: {
-        enum: ['Point'],
-        type: String,
       },
     }
     if (buildSchemaOptions.disableUnique && field.unique && field.localized) {
@@ -356,7 +361,7 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
       }
       if (field.localized && config.localization) {
         config.localization.locales.forEach((locale) => {
-          schema.index({ [`${field.name}.${locale}`]: '2dsphere' }, indexOptions)
+          schema.index({ [`${field.name}.${locale.code}`]: '2dsphere' }, indexOptions)
         })
       } else {
         schema.index({ [field.name]: '2dsphere' }, indexOptions)
@@ -371,11 +376,11 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
   ): void => {
     const baseSchema = {
       ...formatBaseSchema(field, buildSchemaOptions),
+      type: String,
       enum: field.options.map((option) => {
         if (typeof option === 'object') return option.value
         return option
       }),
-      type: String,
     }
 
     schema.add({
@@ -393,7 +398,6 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
 
     if (field.localized && config.localization) {
       schemaToReturn = {
-        localized: true,
         type: config.localization.localeCodes.reduce((locales, locale) => {
           let localeSchema: { [key: string]: any } = {}
 
@@ -401,56 +405,57 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
             localeSchema = {
               ...formatBaseSchema(field, buildSchemaOptions),
               _id: false,
-              relationTo: { enum: field.relationTo, type: String },
               type: Schema.Types.Mixed,
+              relationTo: { type: String, enum: field.relationTo },
               value: {
-                refPath: `${field.name}.${locale}.relationTo`,
                 type: Schema.Types.Mixed,
+                refPath: `${field.name}.${locale}.relationTo`,
               },
             }
           } else {
             localeSchema = {
               ...formatBaseSchema(field, buildSchemaOptions),
-              ref: field.relationTo,
               type: Schema.Types.Mixed,
+              ref: field.relationTo,
             }
           }
 
           return {
             ...locales,
-            [locale]: field.hasMany ? { default: undefined, type: [localeSchema] } : localeSchema,
+            [locale]: field.hasMany ? { type: [localeSchema], default: undefined } : localeSchema,
           }
         }, {}),
+        localized: true,
       }
     } else if (hasManyRelations) {
       schemaToReturn = {
         ...formatBaseSchema(field, buildSchemaOptions),
         _id: false,
-        relationTo: { enum: field.relationTo, type: String },
         type: Schema.Types.Mixed,
+        relationTo: { type: String, enum: field.relationTo },
         value: {
-          refPath: `${field.name}.relationTo`,
           type: Schema.Types.Mixed,
+          refPath: `${field.name}.relationTo`,
         },
       }
 
       if (field.hasMany) {
         schemaToReturn = {
-          default: undefined,
           type: [schemaToReturn],
+          default: undefined,
         }
       }
     } else {
       schemaToReturn = {
         ...formatBaseSchema(field, buildSchemaOptions),
-        ref: field.relationTo,
         type: Schema.Types.Mixed,
+        ref: field.relationTo,
       }
 
       if (field.hasMany) {
         schemaToReturn = {
-          default: undefined,
           type: [schemaToReturn],
+          default: undefined,
         }
       }
     }
@@ -493,11 +498,11 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
   ): void => {
     const baseSchema = {
       ...formatBaseSchema(field, buildSchemaOptions),
+      type: String,
       enum: field.options.map((option) => {
         if (typeof option === 'object') return option.value
         return option
       }),
-      type: String,
     }
 
     if (buildSchemaOptions.draftsEnabled || !field.required) {
@@ -552,7 +557,10 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
     config: SanitizedConfig,
     buildSchemaOptions: BuildSchemaOptions,
   ): void => {
-    const baseSchema = { ...formatBaseSchema(field, buildSchemaOptions), type: String }
+    const baseSchema = {
+      ...formatBaseSchema(field, buildSchemaOptions),
+      type: field.hasMany ? [String] : String,
+    }
 
     schema.add({
       [field.name]: localizeSchema(field, baseSchema, config.localization),
@@ -578,8 +586,8 @@ const fieldToSchemaMap: Record<string, FieldSchemaGenerator> = {
   ): void => {
     const baseSchema = {
       ...formatBaseSchema(field, buildSchemaOptions),
-      ref: field.relationTo,
       type: Schema.Types.Mixed,
+      ref: field.relationTo,
     }
 
     schema.add({

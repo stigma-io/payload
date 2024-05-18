@@ -19,7 +19,6 @@ export const devAdmin: DevAdminType = async ({ payload, viteConfig: viteConfigAr
 
   try {
     const viteConfig = await getViteConfig(payload.config)
-    // console.log('vc', viteConfig)
     const viteServer = await vite.createServer(viteConfig)
 
     router.use(viteServer.middlewares)

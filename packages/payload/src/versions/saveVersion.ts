@@ -39,22 +39,20 @@ export const saveVersion = async ({
     if (autosave) {
       let docs
       const findVersionArgs = {
-        collectionSlug: collection.slug,
-        globalSlug: collection.slug,
         limit: 1,
         req,
         sort: '-updatedAt',
-        where: {
-          parent: {
-            equals: id,
-          },
-        },
       }
       if (collection) {
         ;({ docs } = await payload.db.findVersions({
           ...findVersionArgs,
           collection: collection.slug,
           req,
+          where: {
+            parent: {
+              equals: id,
+            },
+          },
         }))
       } else {
         ;({ docs } = await payload.db.findGlobalVersions({
@@ -155,7 +153,7 @@ export const saveVersion = async ({
   createdVersion.updatedAt = result.updatedAt
 
   createdVersion = sanitizeInternalFields(createdVersion)
-  createdVersion.id = id
+  createdVersion.id = result.parent
 
   return createdVersion
 }

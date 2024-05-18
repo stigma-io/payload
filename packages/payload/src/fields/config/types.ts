@@ -4,13 +4,18 @@ import type { TFunction } from 'i18next'
 import type { CSSProperties } from 'react'
 
 import monacoeditor from 'monaco-editor' // IMPORTANT - DO NOT REMOVE: This is required for pnpm's default isolated mode to work - even though the import is not used. This is due to a typescript bug: https://github.com/microsoft/TypeScript/issues/47663#issuecomment-1519138189. (tsbugisolatedmode)
+import type React from 'react'
+
 import type { ConditionalDateProps } from '../../admin/components/elements/DatePicker/types'
+import type { Props as ErrorProps } from '../../admin/components/forms/Error/types'
 import type { Description } from '../../admin/components/forms/FieldDescription/types'
+import type { Props as LabelProps } from '../../admin/components/forms/Label/types'
 import type { RowLabel } from '../../admin/components/forms/RowLabel/types'
 import type { RichTextAdapter } from '../../admin/components/forms/field-types/RichText/types'
 import type { User } from '../../auth'
 import type { SanitizedCollectionConfig, TypeWithID } from '../../collections/config/types'
 import type { SanitizedConfig } from '../../config/types'
+import type { DBIdentifierName } from '../../database/types'
 import type { PayloadRequest, RequestContext } from '../../express/types'
 import type { SanitizedGlobalConfig } from '../../globals/config/types'
 import type { Payload } from '../../payload'
@@ -34,8 +39,9 @@ export type FieldHookArgs<T extends TypeWithID = any, P = any, S = any> = {
   originalDoc?: T
   /** The document before changes were applied, only in `afterChange` hooks. */
   previousDoc?: T
-  /** The sibling data from the previous document in `afterChange` hook. */
+  /** The sibling data of the document before changes being applied, only in `beforeChange` and `afterChange` hook. */
   previousSiblingDoc?: T
+  /** The previous value of the field, before changes, only in `beforeChange` and `afterChange` hooks. */
   previousValue?: P
   /** The Express request object. It is mocked for Local API operations. */
   req: PayloadRequest
@@ -50,17 +56,34 @@ export type FieldHook<T extends TypeWithID = any, P = any, S = any> = (
 ) => P | Promise<P>
 
 export type FieldAccess<T extends TypeWithID = any, P = any, U = any> = (args: {
+  /**
+   * The incoming data used to `create` or `update` the document with. `data` is undefined during the `read` operation.
+   */
   data?: Partial<T>
+  /**
+   * The original data of the document before the `update` is applied. `doc` is undefined during the `create` operation.
+   */
   doc?: T
+  /**
+   * The `id` of the current document being read or updated. `id` is undefined during the `create` operation.
+   */
   id?: number | string
+  /** The `Express` request object containing the currently authenticated `user` */
   req: PayloadRequest<U>
+  /**
+   * Immediately adjacent data to this field. For example, if this is a `group` field, then `siblingData` will be the other fields within the group.
+   */
   siblingData?: Partial<P>
 }) => Promise<boolean> | boolean
 
 export type Condition<T extends TypeWithID = any, P = any> = (
   data: Partial<T>,
   siblingData: Partial<P>,
-  { user }: { user: User },
+  {
+    user,
+  }: {
+    user: User
+  },
 ) => boolean
 
 export type FilterOptionsProps<T = any> = {
@@ -72,7 +95,7 @@ export type FilterOptionsProps<T = any> = {
 }
 
 export type FilterOptions<T = any> =
-  | ((options: FilterOptionsProps<T>) => Promise<Where> | Where)
+  | ((options: FilterOptionsProps<T>) => Promise<Where | boolean> | Where | boolean)
   | Where
   | null
 
@@ -83,9 +106,15 @@ type Admin = {
     Field?: React.ComponentType<any>
     Filter?: React.ComponentType<any>
   }
+  /**
+   * You can programmatically show / hide fields based on what other fields are doing.
+   * This is also run on the server, to determine if the field should be validated.
+   */
   condition?: Condition
   description?: Description
   disableBulkEdit?: boolean
+  disableListColumn?: boolean
+  disableListFilter?: boolean
   disabled?: boolean
   hidden?: boolean
   position?: 'sidebar'
@@ -105,6 +134,7 @@ export type ValidateOptions<TData, TSiblingData, TFieldConfig> = {
   id?: number | string
   operation?: Operation
   payload?: Payload
+  req?: PayloadRequest
   siblingData: Partial<TSiblingData>
   t: TFunction
   user?: Partial<User>
@@ -154,6 +184,12 @@ export type NumberField = FieldBase & {
   admin?: Admin & {
     /** Set this property to a string that will be used for browser autocomplete. */
     autoComplete?: string
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+      afterInput?: React.ComponentType<any>[]
+      beforeInput?: React.ComponentType<any>[]
+    }
     /** Set this property to define a placeholder string for the field. */
     placeholder?: Record<string, string> | string
     /** Set a value for the number field to increment / decrement using browser controls. */
@@ -186,17 +222,46 @@ export type NumberField = FieldBase & {
 export type TextField = FieldBase & {
   admin?: Admin & {
     autoComplete?: string
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+      afterInput?: React.ComponentType<any>[]
+      beforeInput?: React.ComponentType<any>[]
+    }
     placeholder?: Record<string, string> | string
     rtl?: boolean
   }
   maxLength?: number
   minLength?: number
   type: 'text'
-}
+} & (
+    | {
+        /** Makes this field an ordered array of strings instead of just a single string. */
+        hasMany: true
+        /** Maximum number of strings in the strings array, if `hasMany` is set to true. */
+        maxRows?: number
+        /** Minimum number of strings in the strings array, if `hasMany` is set to true. */
+        minRows?: number
+      }
+    | {
+        /** Makes this field an ordered array of strings instead of just a single string. */
+        hasMany?: false | undefined
+        /** Maximum number of strings in the strings array, if `hasMany` is set to true. */
+        maxRows?: undefined
+        /** Minimum number of strings in the strings array, if `hasMany` is set to true. */
+        minRows?: undefined
+      }
+  )
 
 export type EmailField = FieldBase & {
   admin?: Admin & {
     autoComplete?: string
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+      afterInput?: React.ComponentType<any>[]
+      beforeInput?: React.ComponentType<any>[]
+    }
     placeholder?: Record<string, string> | string
   }
   type: 'email'
@@ -204,6 +269,12 @@ export type EmailField = FieldBase & {
 
 export type TextareaField = FieldBase & {
   admin?: Admin & {
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+      afterInput?: React.ComponentType<any>[]
+      beforeInput?: React.ComponentType<any>[]
+    }
     placeholder?: Record<string, string> | string
     rows?: number
     rtl?: boolean
@@ -214,11 +285,25 @@ export type TextareaField = FieldBase & {
 }
 
 export type CheckboxField = FieldBase & {
+  admin?: Admin & {
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+      afterInput?: React.ComponentType<any>[]
+      beforeInput?: React.ComponentType<any>[]
+    }
+  }
   type: 'checkbox'
 }
 
 export type DateField = FieldBase & {
   admin?: Admin & {
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+      afterInput?: React.ComponentType<any>[]
+      beforeInput?: React.ComponentType<any>[]
+    }
     date?: ConditionalDateProps
     placeholder?: Record<string, string> | string
   }
@@ -304,6 +389,8 @@ export type UIField = {
     }
     condition?: Condition
     disableBulkEdit?: boolean
+    disableListColumn?: boolean
+    disableListFilter?: boolean
     position?: string
     width?: string
   }
@@ -315,6 +402,12 @@ export type UIField = {
 }
 
 export type UploadField = FieldBase & {
+  admin?: {
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+    }
+  }
   filterOptions?: FilterOptions
   maxDepth?: number
   relationTo: string
@@ -322,6 +415,10 @@ export type UploadField = FieldBase & {
 }
 
 type CodeAdmin = Admin & {
+  components?: {
+    Error?: React.ComponentType<ErrorProps>
+    Label?: React.ComponentType<LabelProps>
+  }
   editorOptions?: EditorProps['options']
   language?: string
 }
@@ -334,33 +431,45 @@ export type CodeField = Omit<FieldBase, 'admin'> & {
 }
 
 type JSONAdmin = Admin & {
+  components?: {
+    Error?: React.ComponentType<ErrorProps>
+    Label?: React.ComponentType<LabelProps>
+  }
   editorOptions?: EditorProps['options']
 }
 
 export type JSONField = Omit<FieldBase, 'admin'> & {
   admin?: JSONAdmin
+  jsonSchema?: Record<string, unknown>
   type: 'json'
 }
 
 export type SelectField = FieldBase & {
   admin?: Admin & {
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+    }
     isClearable?: boolean
     isSortable?: boolean
   }
+  /**
+   * Customize the SQL table name
+   */
+  dbName?: DBIdentifierName
+  /**
+   * Customize the DB enum name
+   */
+  enumName?: DBIdentifierName
   hasMany?: boolean
   options: Option[]
   type: 'select'
 }
 
-export type RelationshipField = FieldBase & {
-  admin?: Admin & {
-    allowCreate?: boolean
-    isSortable?: boolean
-  }
+type SharedRelationshipProperties = FieldBase & {
   filterOptions?: FilterOptions
   hasMany?: boolean
   maxDepth?: number
-  relationTo: string | string[]
   type: 'relationship'
 } & (
     | {
@@ -391,6 +500,30 @@ export type RelationshipField = FieldBase & {
       }
   )
 
+type RelationshipAdmin = Admin & {
+  allowCreate?: boolean
+  components?: {
+    Error?: React.ComponentType<ErrorProps>
+    Label?: React.ComponentType<LabelProps>
+  }
+  isSortable?: boolean
+}
+export type PolymorphicRelationshipField = SharedRelationshipProperties & {
+  admin?: RelationshipAdmin & {
+    sortOptions?: {
+      [collectionSlug: string]: string
+    }
+  }
+  relationTo: string[]
+}
+export type SingleRelationshipField = SharedRelationshipProperties & {
+  admin?: RelationshipAdmin & {
+    sortOptions?: string
+  }
+  relationTo: string
+}
+export type RelationshipField = PolymorphicRelationshipField | SingleRelationshipField
+
 export type ValueWithRelation = {
   relationTo: string
   value: number | string
@@ -411,8 +544,17 @@ export type RichTextField<
   AdapterProps = any,
   ExtraProperties = {},
 > = FieldBase & {
-  admin?: Admin
+  admin?: Admin & {
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+    }
+  }
   editor?: RichTextAdapter<Value, AdapterProps, AdapterProps>
+  /**
+   * Sets a maximum population depth for this field, regardless of the remaining depth when this field is reached.
+   */
+  maxDepth?: number
   type: 'richText'
 } & ExtraProperties
 
@@ -422,7 +564,15 @@ export type ArrayField = FieldBase & {
       RowLabel?: RowLabel
     } & Admin['components']
     initCollapsed?: boolean | false
+    /**
+     * Disable drag and drop sorting
+     */
+    isSortable?: boolean
   }
+  /**
+   * Customize the SQL table name
+   */
+  dbName?: DBIdentifierName
   fields: Field[]
   /** Customize generated GraphQL and Typescript schema names.
    * By default it is bound to the collection.
@@ -439,13 +589,31 @@ export type ArrayField = FieldBase & {
 
 export type RadioField = FieldBase & {
   admin?: Admin & {
+    components?: {
+      Error?: React.ComponentType<ErrorProps>
+      Label?: React.ComponentType<LabelProps>
+    }
     layout?: 'horizontal' | 'vertical'
   }
+  /**
+   * Customize the SQL table name
+   */
+  dbName?: DBIdentifierName
+  /**
+   * Customize the DB enum name
+   */
+  enumName?: DBIdentifierName
   options: Option[]
   type: 'radio'
 }
 
 export type Block = {
+  /** Extension point to add your custom data. */
+  custom?: Record<string, any>
+  /**
+   * Customize the SQL table name
+   */
+  dbName?: DBIdentifierName
   fields: Field[]
   /** @deprecated - please migrate to the interfaceName property instead. */
   graphQL?: {
@@ -467,6 +635,10 @@ export type Block = {
 export type BlockField = FieldBase & {
   admin?: Admin & {
     initCollapsed?: boolean | false
+    /**
+     * Disable drag and drop sorting
+     */
+    isSortable?: boolean
   }
   blocks: Block[]
   defaultValue?: unknown
@@ -572,6 +744,10 @@ export function fieldIsArrayType(field: Field): field is ArrayField {
 
 export function fieldIsBlockType(field: Field): field is BlockField {
   return field.type === 'blocks'
+}
+
+export function fieldIsGroupType(field: Field): field is GroupField {
+  return field.type === 'group'
 }
 
 export function optionIsObject(option: Option): option is OptionObject {

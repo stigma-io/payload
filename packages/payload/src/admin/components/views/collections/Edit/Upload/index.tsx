@@ -116,10 +116,12 @@ export const Upload: React.FC<Props> = (props) => {
 
   const hasImageSizes = collection?.upload?.imageSizes?.length > 0
   const hasResizeOptions = Boolean(collection?.upload?.resizeOptions)
+  // Explicitly check if set to true, default is undefined
+  const focalPointEnabled = collection?.upload?.focalPoint === true
 
   const { collection: { upload: { crop: showCrop = true, focalPoint = true } } = {} } = props
 
-  const showFocalPoint = focalPoint && (hasImageSizes || hasResizeOptions)
+  const showFocalPoint = focalPoint && (hasImageSizes || hasResizeOptions || focalPointEnabled)
 
   const lastSubmittedTime = submitted ? new Date().toISOString() : null
 
@@ -161,7 +163,7 @@ export const Upload: React.FC<Props> = (props) => {
                   value={value.name}
                 />
 
-                {isImage(value.type) && (
+                {isImage(value.type) && value.type !== 'image/svg+xml' && (
                   <UploadActions
                     canEdit={showCrop || showFocalPoint}
                     showSizePreviews={hasImageSizes && doc.filename && !replacingFile}

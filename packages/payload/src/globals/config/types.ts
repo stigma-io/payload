@@ -3,7 +3,7 @@ import type { DeepRequired } from 'ts-essentials'
 
 import type {
   CustomPreviewButtonProps,
-  CustomPublishButtonProps,
+  CustomPublishButtonType,
   CustomSaveButtonProps,
   CustomSaveDraftButtonProps,
 } from '../../admin/components/elements/types'
@@ -11,14 +11,14 @@ import type { User } from '../../auth/types'
 import type {
   Access,
   AdminViewComponent,
-  EditView,
+  EditViewConfig,
   Endpoint,
   EntityDescription,
   GeneratePreviewURL,
   LivePreviewConfig,
 } from '../../config/types'
-import type { PayloadRequest } from '../../express/types'
-import type { RequestContext } from '../../express/types'
+import type { DBIdentifierName } from '../../database/types'
+import type { PayloadRequest, RequestContext } from '../../express/types'
 import type { Field } from '../../fields/config/types'
 import type { Where } from '../../types'
 import type { IncomingGlobalVersions, SanitizedGlobalVersions } from '../../versions/types'
@@ -33,7 +33,7 @@ export type BeforeValidateHook = (args: {
   /** The global which this hook is being run on */
   global: SanitizedGlobalConfig
   originalDoc?: any
-  req?: PayloadRequest
+  req: PayloadRequest
 }) => any
 
 export type BeforeChangeHook = (args: {
@@ -86,7 +86,7 @@ export type GlobalAdminOptions = {
        * Replaces the "Publish" button
        * + drafts must be enabled
        */
-      PublishButton?: CustomPublishButtonProps
+      PublishButton?: CustomPublishButtonType
       /**
        * Replaces the "Save" button
        * + drafts must be disabled
@@ -105,28 +105,32 @@ export type GlobalAdminOptions = {
        * Set to an object to replace or modify individual nested routes, or to add new ones.
        */
       Edit?:
-        | {
-            [name: string]: EditView
-            API?: EditView
-            /**
-             * Replace or modify individual nested routes, or add new ones:
-             * + `Default` - `/admin/globals/:slug`
-             * + `API` - `/admin/globals/:id/api`
-             * + `LivePreview` - `/admin/globals/:id/preview`
-             * + `References` - `/admin/globals/:id/references`
-             * + `Relationships` - `/admin/globals/:id/relationships`
-             * + `Versions` - `/admin/globals/:id/versions`
-             * + `Version` - `/admin/globals/:id/versions/:version`
-             * + `:path` - `/admin/globals/:id/:path`
-             */
-            Default?: EditView
-            LivePreview?: EditView
-            Version?: EditView
-            Versions?: EditView
-            // TODO: uncomment these as they are built
-            // References?: EditView
-            // Relationships?: EditView
-          }
+        | (
+            | {
+                /**
+                 * Replace or modify individual nested routes, or add new ones:
+                 * + `Default` - `/admin/globals/:slug`
+                 * + `API` - `/admin/globals/:id/api`
+                 * + `LivePreview` - `/admin/globals/:id/preview`
+                 * + `References` - `/admin/globals/:id/references`
+                 * + `Relationships` - `/admin/globals/:id/relationships`
+                 * + `Versions` - `/admin/globals/:id/versions`
+                 * + `Version` - `/admin/globals/:id/versions/:version`
+                 * + `CustomView` - `/admin/globals/:id/:path`
+                 */
+                API?: AdminViewComponent | Partial<EditViewConfig>
+                Default?: AdminViewComponent | Partial<EditViewConfig>
+                LivePreview?: AdminViewComponent | Partial<EditViewConfig>
+                Version?: AdminViewComponent | Partial<EditViewConfig>
+                Versions?: AdminViewComponent | Partial<EditViewConfig>
+                // TODO: uncomment these as they are built
+                // References?: EditView
+                // Relationships?: EditView
+              }
+            | {
+                [name: string]: EditViewConfig
+              }
+          )
         | AdminViewComponent
     }
   }
@@ -166,6 +170,10 @@ export type GlobalConfig = {
   admin?: GlobalAdminOptions
   /** Extension point to add your custom data. */
   custom?: Record<string, any>
+  /**
+   * Customize the SQL table name
+   */
+  dbName?: DBIdentifierName
   endpoints?: Omit<Endpoint, 'root'>[] | false
   fields: Field[]
   graphQL?:
