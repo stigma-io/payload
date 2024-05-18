@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import type express from 'express'
 import type serveStatic from 'serve-static'
 import type { ResizeOptions, Sharp } from 'sharp'
@@ -18,10 +17,13 @@ export type FileSizes = {
 export type FileData = {
   filename: string
   filesize: number
+  focalX?: number
+  focalY?: number
   height: number
   mimeType: string
   sizes: FileSizes
   tempFilePath?: string
+  url?: string
   width: number
 }
 
@@ -47,7 +49,7 @@ export type ImageUploadFormatOptions = {
  */
 export type ImageUploadTrimOptions = Parameters<Sharp['trim']>[0]
 
-export type ImageSize = ResizeOptions & {
+export type ImageSize = Omit<ResizeOptions, 'withoutEnlargement'> & {
   /**
    * @deprecated prefer position
    */
@@ -55,6 +57,16 @@ export type ImageSize = ResizeOptions & {
   formatOptions?: ImageUploadFormatOptions
   name: string
   trimOptions?: ImageUploadTrimOptions
+  /**
+   * When an uploaded image is smaller than the defined image size, we have 3 options:
+   *
+   * `undefined | false | true`
+   *
+   * 1. `undefined` [default]: uploading images with smaller width AND height than the image size will return null
+   * 2. `false`: always enlarge images to the image size
+   * 3. `true`: if the image is smaller than the image size, return the original image
+   */
+  withoutEnlargement?: ResizeOptions['withoutEnlargement']
 }
 
 export type GetAdminThumbnail = (args: { doc: Record<string, unknown> }) => false | null | string
@@ -63,6 +75,12 @@ export type IncomingUploadType = {
   adminThumbnail?: GetAdminThumbnail | string
   crop?: boolean
   disableLocalStorage?: boolean
+  /**
+   * Accepts existing headers and can filter/modify them.
+   *
+   * Useful for adding custom headers to fetch from external providers.
+   */
+  externalFileHeaderFilter?: (headers: Record<string, string>) => Record<string, string>
   filesRequiredOnCreate?: boolean
   focalPoint?: boolean
   /** Options for original upload file only. For sizes, set each formatOptions individually. */
@@ -104,4 +122,17 @@ export type File = {
 export type FileToSave = {
   buffer: Buffer
   path: string
+}
+
+export type UploadEdits = {
+  crop?: {
+    height?: number
+    width?: number
+    x?: number
+    y?: number
+  }
+  focalPoint?: {
+    x?: number
+    y?: number
+  }
 }

@@ -2,6 +2,7 @@
 
 .step-nav {
   display: flex;
+  align-items: center;
   gap: calc(var(--base) / 2);
 
   &::after {

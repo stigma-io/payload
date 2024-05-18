@@ -7,7 +7,6 @@ import { LivePreviewView } from '../../../LivePreview'
 import VersionView from '../../../Version/Version'
 import VersionsView from '../../../Versions'
 import { DefaultCollectionEdit } from '../Default/index'
-import { isMemoComponent } from '../../../../../../utilities/isMemoComponent'
 
 export type collectionViewType =
   | 'API'
@@ -18,9 +17,9 @@ export type collectionViewType =
   | 'Version'
   | 'Versions'
 
-export const defaultCollectionViews: {
+export const defaultCollectionViews = (): {
   [key in collectionViewType]: React.ComponentType<any>
-} = {
+} => ({
   API,
   Default: DefaultCollectionEdit,
   LivePreview: LivePreviewView,
@@ -28,7 +27,7 @@ export const defaultCollectionViews: {
   Relationships: null,
   Version: VersionView,
   Versions: VersionsView,
-}
+})
 
 export const CustomCollectionComponent = (
   args: CollectionEditViewProps & {
@@ -44,20 +43,15 @@ export const CustomCollectionComponent = (
   // For example, the Edit view:
   // 1. Edit?.Default
   // 2. Edit?.Default?.Component
-  // TODO: Remove the `@ts-ignore` when a Typescript wizard arrives
-  // For some reason `Component` does not exist on type `Edit[view]` no matter how narrow the type is
+
   const Component =
     typeof Edit === 'object' && typeof Edit[view] === 'function'
       ? Edit[view]
       : typeof Edit === 'object' &&
         typeof Edit?.[view] === 'object' &&
-        // @ts-ignore
         typeof Edit[view].Component === 'function'
-      ? // @ts-ignore
-        Edit[view].Component
-      : typeof Edit?.[view] === 'object' && isMemoComponent(Edit[view])
-      ? Edit[view]
-      : defaultCollectionViews[view]
+      ? Edit[view].Component
+      : defaultCollectionViews()[view]
 
   if (Component) {
     return <Component {...args} />

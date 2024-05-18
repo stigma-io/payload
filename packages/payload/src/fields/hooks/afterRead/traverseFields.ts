@@ -11,16 +11,21 @@ type Args = {
   currentDepth: number
   depth: number
   doc: Record<string, unknown>
+  draft: boolean
+  fallbackLocale: null | string
   fieldPromises: Promise<void>[]
   fields: (Field | TabAsField)[]
   findMany: boolean
   flattenLocales: boolean
   global: SanitizedGlobalConfig | null
+  locale: null | string
   overrideAccess: boolean
   populationPromises: Promise<void>[]
   req: PayloadRequest
   showHiddenFields: boolean
   siblingDoc: Record<string, unknown>
+  triggerAccessControl?: boolean
+  triggerHooks?: boolean
 }
 
 export const traverseFields = ({
@@ -29,16 +34,21 @@ export const traverseFields = ({
   currentDepth,
   depth,
   doc,
+  draft,
+  fallbackLocale,
   fieldPromises,
   fields,
   findMany,
   flattenLocales,
   global,
+  locale,
   overrideAccess,
   populationPromises,
   req,
   showHiddenFields,
   siblingDoc,
+  triggerAccessControl = true,
+  triggerHooks = true,
 }: Args): void => {
   fields.forEach((field) => {
     fieldPromises.push(
@@ -48,16 +58,21 @@ export const traverseFields = ({
         currentDepth,
         depth,
         doc,
+        draft,
+        fallbackLocale,
         field,
         fieldPromises,
         findMany,
         flattenLocales,
         global,
+        locale,
         overrideAccess,
         populationPromises,
         req,
         showHiddenFields,
         siblingDoc,
+        triggerAccessControl,
+        triggerHooks,
       }),
     )
   })

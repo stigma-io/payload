@@ -1,6 +1,6 @@
 {
   "name": "@stigma-io/payload",
-  "version": "2.0.13",
+  "version": "2.18.3",
   "description": "Node, React and MongoDB Headless CMS and Application Framework",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -19,19 +19,24 @@
       "require": "./src/exports/scss.scss",
       "default": "./src/exports/scss.scss"
     },
-    "./dist/admin/*": {
-      "import": "./src/admin/*.*",
-      "require": "./dist/admin/*.js",
-      "types": "./dist/admin/*.d.ts"
-    },
     "./*": {
       "import": "./src/exports/*.ts",
       "require": "./src/exports/*.ts",
       "types": "./src/exports/*.ts"
+    },
+    "./dist/*": {
+      "import": "./src/*.ts",
+      "require": "./src/*.ts",
+      "types": "./src/*.ts"
+    },
+    "./dist/admin/*": {
+      "import": "./src/admin/*.*",
+      "require": "./dist/admin/*.js",
+      "types": "./dist/admin/*.d.ts"
     }
   },
   "scripts": {
-    "build": "pnpm copyfiles && pnpm build:swc && pnpm build:types && pnpm build:components && ts-node -T ./scripts/exportPointerFiles.ts",
+    "build": "pnpm copyfiles && pnpm build:swc && pnpm build:types && pnpm build:components && ts-node -T ../../scripts/exportPointerFiles.ts ../packages/payload dist/exports",
     "build:components": "webpack --config dist/admin/components.config.js",
     "build:swc": "swc ./src -d ./dist --config-file .swcrc",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
@@ -59,8 +64,9 @@
     "@faceless-ui/scroll-info": "1.3.0",
     "@faceless-ui/window-info": "2.1.1",
     "@monaco-editor/react": "4.5.1",
-    "@swc/core": "1.3.76",
+    "@swc/core": "1.3.107",
     "@swc/register": "0.1.10",
+    "ajv": "^6.12.6",
     "body-parser": "1.20.2",
     "body-scroll-lock": "4.0.0-beta.0",
     "bson-objectid": "2.0.4",
@@ -102,7 +108,6 @@
     "jwt-decode": "3.1.2",
     "md5": "2.3.0",
     "method-override": "3.0.0",
-    "micro-memoize": "4.1.2",
     "minimist": "1.2.8",
     "mkdirp": "1.0.4",
     "monaco-editor": "0.38.0",
@@ -140,7 +145,7 @@
     "terser-webpack-plugin": "5.3.9",
     "ts-essentials": "7.0.3",
     "use-context-selector": "1.4.1",
-    "uuid": "8.3.2"
+    "uuid": "9.0.1"
   },
   "devDependencies": {
     "@payloadcms/eslint-config": "workspace:*",
@@ -193,7 +198,7 @@
     "get-port": "5.1.1",
     "mini-css-extract-plugin": "1.6.2",
     "node-fetch": "2.6.12",
-    "nodemon": "3.0.1",
+    "nodemon": "3.0.3",
     "object.assign": "4.1.4",
     "object.entries": "1.1.6",
     "passport-strategy": "1.0.0",
@@ -208,8 +213,7 @@
     "terser-webpack-plugin": "^5.3.6",
     "url-loader": "4.1.1",
     "vite": "^4.5.0",
-    "webpack": "5.88.2",
-    "webpack-cli": "^5.1.4"
+    "webpack": "^5.78.0"
   },
   "engines": {
     "node": ">=14"

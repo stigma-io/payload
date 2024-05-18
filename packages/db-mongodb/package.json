@@ -1,6 +1,6 @@
 {
   "name": "@stigma-io/payload-db-mongodb",
-  "version": "1.0.4",
+  "version": "1.5.1",
   "description": "The officially supported MongoDB database adapter for Payload",
   "repository": "https://github.com/payloadcms/payload",
   "license": "MIT",
@@ -31,18 +31,19 @@
     "deepmerge": "4.3.1",
     "es-dirname": "^0.1.0",
     "get-port": "5.1.1",
-    "mongoose": "6.12.0",
+    "mongoose": "6.12.3",
     "mongoose-aggregate-paginate-v2": "1.0.6",
     "mongoose-paginate-v2": "1.7.22",
     "prompts": "2.4.2",
+    "http-status": "1.6.2",
     "uuid": "9.0.0"
   },
   "devDependencies": {
     "@payloadcms/eslint-config": "workspace:*",
-    "@stigma-io/payload": "workspace:*",
     "@types/mongoose-aggregate-paginate-v2": "1.0.9",
     "mongodb": "4.17.1",
-    "mongodb-memory-server": "8.13.0"
+    "mongodb-memory-server": "^9",
+    "@stigma-io/payload": "workspace:*"
   },
   "peerDependencies": {
     "payload": "^2.0.0"

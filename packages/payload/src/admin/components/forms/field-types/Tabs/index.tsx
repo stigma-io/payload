@@ -83,19 +83,21 @@ const TabsField: React.FC<Props> = (props) => {
   const { preferencesKey } = useDocumentInfo()
   const { i18n } = useTranslation()
 
-  const isWithinCollapsible = useCollapsible()
+  const { withinCollapsible } = useCollapsible()
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
   const tabsPrefKey = `tabs-${indexPath}`
 
   useEffect(() => {
-    const getInitialPref = async () => {
-      const existingPreferences: DocumentPreferences = await getPreference(preferencesKey)
-      const initialIndex = path
-        ? existingPreferences?.fields?.[path]?.tabIndex
-        : existingPreferences?.fields?.[tabsPrefKey]?.tabIndex
-      setActiveTabIndex(initialIndex || 0)
+    if (preferencesKey) {
+      const getInitialPref = async () => {
+        const existingPreferences: DocumentPreferences = await getPreference(preferencesKey)
+        const initialIndex = path
+          ? existingPreferences?.fields?.[path]?.tabIndex
+          : existingPreferences?.fields?.[tabsPrefKey]?.tabIndex
+        setActiveTabIndex(initialIndex || 0)
+      }
+      void getInitialPref()
     }
-    getInitialPref()
   }, [path, indexPath, getPreference, preferencesKey, tabsPrefKey])
 
   const handleTabChange = useCallback(
@@ -104,28 +106,30 @@ const TabsField: React.FC<Props> = (props) => {
 
       const existingPreferences: DocumentPreferences = await getPreference(preferencesKey)
 
-      setPreference(preferencesKey, {
-        ...existingPreferences,
-        ...(path
-          ? {
-              fields: {
-                ...(existingPreferences?.fields || {}),
-                [path]: {
-                  ...existingPreferences?.fields?.[path],
-                  tabIndex: incomingTabIndex,
+      if (preferencesKey) {
+        await setPreference(preferencesKey, {
+          ...existingPreferences,
+          ...(path
+            ? {
+                fields: {
+                  ...(existingPreferences?.fields || {}),
+                  [path]: {
+                    ...existingPreferences?.fields?.[path],
+                    tabIndex: incomingTabIndex,
+                  },
                 },
-              },
-            }
-          : {
-              fields: {
-                ...existingPreferences?.fields,
-                [tabsPrefKey]: {
-                  ...existingPreferences?.fields?.[tabsPrefKey],
-                  tabIndex: incomingTabIndex,
+              }
+            : {
+                fields: {
+                  ...existingPreferences?.fields,
+                  [tabsPrefKey]: {
+                    ...existingPreferences?.fields?.[tabsPrefKey],
+                    tabIndex: incomingTabIndex,
+                  },
                 },
-              },
-            }),
-      })
+              }),
+        })
+      }
     },
     [preferencesKey, getPreference, setPreference, path, tabsPrefKey],
   )
@@ -138,7 +142,7 @@ const TabsField: React.FC<Props> = (props) => {
         fieldBaseClass,
         className,
         baseClass,
-        isWithinCollapsible && `${baseClass}--within-collapsible`,
+        withinCollapsible && `${baseClass}--within-collapsible`,
       ]
         .filter(Boolean)
         .join(' ')}
@@ -166,7 +170,9 @@ const TabsField: React.FC<Props> = (props) => {
                 className={[
                   `${baseClass}__tab`,
                   activeTabConfig.label &&
-                    `${baseClass}__tab-${toKebabCase(getTranslation(activeTabConfig.label, i18n))}`,
+                    `${baseClass}__tabConfigLabel-${toKebabCase(
+                      getTranslation(activeTabConfig.label, i18n),
+                    )}`,
                 ]
                   .filter(Boolean)
                   .join(' ')}
@@ -175,6 +181,7 @@ const TabsField: React.FC<Props> = (props) => {
                   className={`${baseClass}__description`}
                   description={activeTabConfig.description}
                   marginPlacement="bottom"
+                  path={path}
                 />
                 <RenderFields
                   fieldSchema={activeTabConfig.fields.map((field) => {
@@ -191,7 +198,11 @@ const TabsField: React.FC<Props> = (props) => {
                   fieldTypes={fieldTypes}
                   forceRender={forceRender}
                   indexPath={indexPath}
-                  key={String(activeTabConfig.label)}
+                  key={
+                    activeTabConfig.label
+                      ? getTranslation(activeTabConfig.label, i18n)
+                      : activeTabConfig['name']
+                  }
                   margins="small"
                   permissions={
                     tabHasName(activeTabConfig) && permissions?.[activeTabConfig.name]

@@ -19,6 +19,7 @@ export type { FileData, ImageSize, IncomingUploadType } from '../uploads/types'
 
 export type {
   CustomPublishButtonProps,
+  CustomPublishButtonType,
   CustomSaveButtonProps,
   CustomSaveDraftButtonProps,
 } from './../admin/components/elements/types'
@@ -80,6 +81,7 @@ export type {
   Option,
   OptionObject,
   PointField,
+  PolymorphicRelationshipField,
   RadioField,
   RelationshipField,
   RelationshipValue,
@@ -87,6 +89,7 @@ export type {
   RowAdmin,
   RowField,
   SelectField,
+  SingleRelationshipField,
   Tab,
   TabAsField,
   TabsAdmin,
@@ -107,6 +110,7 @@ export {
   fieldHasSubFields,
   fieldIsArrayType,
   fieldIsBlockType,
+  fieldIsGroupType,
   fieldIsLocalized,
   fieldIsPresentationalOnly,
   fieldSupportsMany,

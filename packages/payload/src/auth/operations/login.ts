@@ -8,7 +8,7 @@ import type { PayloadRequest } from '../../express/types'
 import type { User } from '../types'
 
 import { buildAfterOperation } from '../../collections/operations/utils'
-import { AuthenticationError, LockedAuth } from '../../errors'
+import { AuthenticationError, LockedAuth, ValidationError } from '../../errors'
 import { afterRead } from '../../fields/hooks/afterRead'
 import { commitTransaction } from '../../utilities/commitTransaction'
 import getCookieExpiration from '../../utilities/getCookieExpiration'
@@ -18,8 +18,8 @@ import sanitizeInternalFields from '../../utilities/sanitizeInternalFields'
 import isLocked from '../isLocked'
 import { authenticateLocalStrategy } from '../strategies/local/authenticate'
 import { incrementLoginAttempts } from '../strategies/local/incrementLoginAttempts'
+import { resetLoginAttempts } from '../strategies/local/resetLoginAttempts'
 import { getFieldsToSign } from './getFieldsToSign'
-import unlock from './unlock'
 
 export type Result = {
   exp?: number
@@ -45,43 +45,53 @@ async function login<TSlug extends keyof GeneratedTypes['collections']>(
 ): Promise<Result & { user: GeneratedTypes['collections'][TSlug] }> {
   let args = incomingArgs
 
-  // /////////////////////////////////////
-  // beforeOperation - Collection
-  // /////////////////////////////////////
-
-  await args.collection.config.hooks.beforeOperation.reduce(async (priorHook, hook) => {
-    await priorHook
-
-    args =
-      (await hook({
-        args,
-        collection: args.collection?.config,
-        context: args.req.context,
-        operation: 'login',
-      })) || args
-  }, Promise.resolve())
-
-  const {
-    collection: { config: collectionConfig },
-    data,
-    depth,
-    overrideAccess,
-    req,
-    req: {
-      payload,
-      payload: { config, secret },
-    },
-    showHiddenFields,
-  } = args
-
   try {
-    const shouldCommit = await initTransaction(req)
+    const shouldCommit = await initTransaction(args.req)
+
+    // /////////////////////////////////////
+    // beforeOperation - Collection
+    // /////////////////////////////////////
+
+    await args.collection.config.hooks.beforeOperation.reduce(async (priorHook, hook) => {
+      await priorHook
+
+      args =
+        (await hook({
+          args,
+          collection: args.collection?.config,
+          context: args.req.context,
+          operation: 'login',
+          req: args.req,
+        })) || args
+    }, Promise.resolve())
+
+    const {
+      collection: { config: collectionConfig },
+      data,
+      depth,
+      overrideAccess,
+      req,
+      req: {
+        fallbackLocale,
+        locale,
+        payload,
+        payload: { config, secret },
+      },
+      showHiddenFields,
+    } = args
 
     // /////////////////////////////////////
     // Login
     // /////////////////////////////////////
 
     const { email: unsanitizedEmail, password } = data
+
+    if (typeof unsanitizedEmail !== 'string' || unsanitizedEmail.trim() === '') {
+      throw new ValidationError([{ field: 'email', message: req.i18n.t('validation:required') }])
+    }
+    if (typeof password !== 'string' || password.trim() === '') {
+      throw new ValidationError([{ field: 'password', message: req.i18n.t('validation:required') }])
+    }
 
     const email = unsanitizedEmail ? unsanitizedEmail.toLowerCase().trim() : null
 
@@ -115,16 +125,16 @@ async function login<TSlug extends keyof GeneratedTypes['collections']>(
         })
       }
 
+      if (shouldCommit) await commitTransaction(req)
+
       throw new AuthenticationError(req.t)
     }
 
     if (maxLoginAttemptsEnabled) {
-      await unlock({
-        collection: {
-          config: collectionConfig,
-        },
-        data,
-        overrideAccess: true,
+      await resetLoginAttempts({
+        collection: collectionConfig,
+        doc: user,
+        payload: req.payload,
         req,
       })
     }
@@ -195,7 +205,10 @@ async function login<TSlug extends keyof GeneratedTypes['collections']>(
       context: req.context,
       depth,
       doc: user,
+      draft: undefined,
+      fallbackLocale,
       global: null,
+      locale,
       overrideAccess,
       req,
       showHiddenFields,
@@ -262,7 +275,7 @@ async function login<TSlug extends keyof GeneratedTypes['collections']>(
 
     return result
   } catch (error: unknown) {
-    await killTransaction(req)
+    await killTransaction(args.req)
     throw error
   }
 }

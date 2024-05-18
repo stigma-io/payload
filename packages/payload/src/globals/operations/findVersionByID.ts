@@ -31,7 +31,7 @@ async function findVersionByID<T extends TypeWithVersion<T> = any>(args: Argumen
     disableErrors,
     globalConfig,
     overrideAccess,
-    req: { locale, payload, t },
+    req: { fallbackLocale, locale, payload, t },
     req,
     showHiddenFields,
   } = args
@@ -79,6 +79,9 @@ async function findVersionByID<T extends TypeWithVersion<T> = any>(args: Argumen
     // Clone the result - it may have come back memoized
     let result = JSON.parse(JSON.stringify(results[0]))
 
+    // Patch globalType onto version doc
+    result.version.globalType = globalConfig.slug
+
     // /////////////////////////////////////
     // beforeRead - Collection
     // /////////////////////////////////////
@@ -105,7 +108,10 @@ async function findVersionByID<T extends TypeWithVersion<T> = any>(args: Argumen
       currentDepth,
       depth,
       doc: result.version,
+      draft: undefined,
+      fallbackLocale,
       global: globalConfig,
+      locale,
       overrideAccess,
       req,
       showHiddenFields,

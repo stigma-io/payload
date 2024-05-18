@@ -6,6 +6,7 @@ import type { SanitizedGlobalConfig } from '../../../globals/config/types'
 import type { Field, TabAsField } from '../../config/types'
 
 import { fieldAffectsData, tabHasName } from '../../config/types'
+import getValueWithDefault from '../../getDefaultValue'
 import relationshipPopulationPromise from './relationshipPopulationPromise'
 import { traverseFields } from './traverseFields'
 
@@ -15,22 +16,27 @@ type Args = {
   currentDepth: number
   depth: number
   doc: Record<string, unknown>
+  draft: boolean
+  fallbackLocale: null | string
   field: Field | TabAsField
   fieldPromises: Promise<void>[]
   findMany: boolean
   flattenLocales: boolean
   global: SanitizedGlobalConfig | null
+  locale: null | string
   overrideAccess: boolean
   populationPromises: Promise<void>[]
   req: PayloadRequest
   showHiddenFields: boolean
   siblingDoc: Record<string, unknown>
+  triggerAccessControl?: boolean
+  triggerHooks?: boolean
 }
 
 // This function is responsible for the following actions, in order:
 // - Remove hidden fields from response
 // - Flatten locales into requested locale
-// - Sanitize outgoing data (point field, etc)
+// - Sanitize outgoing data (point field, etc.)
 // - Execute field hooks
 // - Execute read access control
 // - Populate relationships
@@ -41,16 +47,21 @@ export const promise = async ({
   currentDepth,
   depth,
   doc,
+  draft,
+  fallbackLocale,
   field,
   fieldPromises,
   findMany,
   flattenLocales,
   global,
+  locale,
   overrideAccess,
   populationPromises,
   req,
   showHiddenFields,
   siblingDoc,
+  triggerAccessControl = true,
+  triggerHooks = true,
 }: Args): Promise<void> => {
   if (
     fieldAffectsData(field) &&
@@ -67,18 +78,13 @@ export const promise = async ({
     typeof siblingDoc[field.name] === 'object' &&
     siblingDoc[field.name] !== null &&
     field.localized &&
-    req.locale !== 'all' &&
+    locale !== 'all' &&
     req.payload.config.localization
 
   if (shouldHoistLocalizedValue) {
     // replace actual value with localized value before sanitizing
     // { [locale]: fields } -> fields
-    const { locale } = req
     const value = siblingDoc[field.name][locale]
-    const fallbackLocale =
-      req.payload.config.localization &&
-      req.payload.config.localization?.fallback &&
-      req.fallbackLocale
 
     let hoistedValue = value
 
@@ -137,11 +143,19 @@ export const promise = async ({
       const editor: RichTextAdapter = field?.editor
       // This is run here AND in the GraphQL Resolver
       if (editor?.populationPromise) {
+        const populateDepth =
+          field?.maxDepth !== undefined && field?.maxDepth < depth ? field?.maxDepth : depth
+
         const populationPromise = editor.populationPromise({
+          context,
           currentDepth,
-          depth,
+          depth: populateDepth,
+          draft,
           field,
+          findMany,
+          flattenLocales,
           overrideAccess,
+          populationPromises,
           req,
           showHiddenFields,
           siblingDoc,
@@ -186,13 +200,13 @@ export const promise = async ({
 
   if (fieldAffectsData(field)) {
     // Execute hooks
-    if (field.hooks?.afterRead) {
+    if (triggerHooks && field.hooks?.afterRead) {
       await field.hooks.afterRead.reduce(async (priorHook, currentHook) => {
         await priorHook
 
         const shouldRunHookOnAllLocales =
           field.localized &&
-          (req.locale === 'all' || !flattenLocales) &&
+          (locale === 'all' || !flattenLocales) &&
           typeof siblingDoc[field.name] === 'object'
 
         if (shouldRunHookOnAllLocales) {
@@ -241,7 +255,8 @@ export const promise = async ({
     }
 
     // Execute access control
-    if (field.access && field.access.read) {
+    let allowDefaultValue = true
+    if (triggerAccessControl && field.access && field.access.read) {
       const result = overrideAccess
         ? true
         : await field.access.read({
@@ -253,8 +268,24 @@ export const promise = async ({
           })
 
       if (!result) {
+        allowDefaultValue = false
         delete siblingDoc[field.name]
       }
+    }
+
+    // Set defaultValue on the field for globals being returned without being first created
+    // or collection documents created prior to having a default
+    if (
+      allowDefaultValue &&
+      typeof siblingDoc[field.name] === 'undefined' &&
+      typeof field.defaultValue !== 'undefined'
+    ) {
+      siblingDoc[field.name] = await getValueWithDefault({
+        defaultValue: field.defaultValue,
+        locale,
+        user: req.user,
+        value: siblingDoc[field.name],
+      })
     }
 
     if (field.type === 'relationship' || field.type === 'upload') {
@@ -262,7 +293,10 @@ export const promise = async ({
         relationshipPopulationPromise({
           currentDepth,
           depth,
+          draft,
+          fallbackLocale,
           field,
+          locale,
           overrideAccess,
           req,
           showHiddenFields,
@@ -283,16 +317,21 @@ export const promise = async ({
         currentDepth,
         depth,
         doc,
+        draft,
+        fallbackLocale,
         fieldPromises,
         fields: field.fields,
         findMany,
         flattenLocales,
         global,
+        locale,
         overrideAccess,
         populationPromises,
         req,
         showHiddenFields,
         siblingDoc: groupDoc,
+        triggerAccessControl,
+        triggerHooks,
       })
 
       break
@@ -309,16 +348,21 @@ export const promise = async ({
             currentDepth,
             depth,
             doc,
+            draft,
+            fallbackLocale,
             fieldPromises,
             fields: field.fields,
             findMany,
             flattenLocales,
             global,
+            locale,
             overrideAccess,
             populationPromises,
             req,
             showHiddenFields,
             siblingDoc: row || {},
+            triggerAccessControl,
+            triggerHooks,
           })
         })
       } else if (!shouldHoistLocalizedValue && typeof rows === 'object' && rows !== null) {
@@ -331,16 +375,21 @@ export const promise = async ({
                 currentDepth,
                 depth,
                 doc,
+                draft,
+                fallbackLocale,
                 fieldPromises,
                 fields: field.fields,
                 findMany,
                 flattenLocales,
                 global,
+                locale,
                 overrideAccess,
                 populationPromises,
                 req,
                 showHiddenFields,
                 siblingDoc: row || {},
+                triggerAccessControl,
+                triggerHooks,
               })
             })
           }
@@ -365,16 +414,21 @@ export const promise = async ({
               currentDepth,
               depth,
               doc,
+              draft,
+              fallbackLocale,
               fieldPromises,
               fields: block.fields,
               findMany,
               flattenLocales,
               global,
+              locale,
               overrideAccess,
               populationPromises,
               req,
               showHiddenFields,
               siblingDoc: row || {},
+              triggerAccessControl,
+              triggerHooks,
             })
           }
         })
@@ -391,16 +445,21 @@ export const promise = async ({
                   currentDepth,
                   depth,
                   doc,
+                  draft,
+                  fallbackLocale,
                   fieldPromises,
                   fields: block.fields,
                   findMany,
                   flattenLocales,
                   global,
+                  locale,
                   overrideAccess,
                   populationPromises,
                   req,
                   showHiddenFields,
                   siblingDoc: row || {},
+                  triggerAccessControl,
+                  triggerHooks,
                 })
               }
             })
@@ -421,16 +480,21 @@ export const promise = async ({
         currentDepth,
         depth,
         doc,
+        draft,
+        fallbackLocale,
         fieldPromises,
         fields: field.fields,
         findMany,
         flattenLocales,
         global,
+        locale,
         overrideAccess,
         populationPromises,
         req,
         showHiddenFields,
         siblingDoc,
+        triggerAccessControl,
+        triggerHooks,
       })
 
       break
@@ -443,22 +507,27 @@ export const promise = async ({
         if (typeof siblingDoc[field.name] !== 'object') tabDoc = {}
       }
 
-      await traverseFields({
+      traverseFields({
         collection,
         context,
         currentDepth,
         depth,
         doc,
+        draft,
+        fallbackLocale,
         fieldPromises,
         fields: field.fields,
         findMany,
         flattenLocales,
         global,
+        locale,
         overrideAccess,
         populationPromises,
         req,
         showHiddenFields,
         siblingDoc: tabDoc,
+        triggerAccessControl,
+        triggerHooks,
       })
 
       break
@@ -471,16 +540,21 @@ export const promise = async ({
         currentDepth,
         depth,
         doc,
+        draft,
+        fallbackLocale,
         fieldPromises,
         fields: field.tabs.map((tab) => ({ ...tab, type: 'tab' })),
         findMany,
         flattenLocales,
         global,
+        locale,
         overrideAccess,
         populationPromises,
         req,
         showHiddenFields,
         siblingDoc,
+        triggerAccessControl,
+        triggerHooks,
       })
       break
     }
