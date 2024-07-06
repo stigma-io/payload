@@ -19,20 +19,15 @@
       "require": "./src/exports/scss.scss",
       "default": "./src/exports/scss.scss"
     },
+    "./dist/*": {
+      "import": "./src/*.*",
+      "require": "./src/*.*",
+      "types": "./src/*.d.ts"
+    },
     "./*": {
       "import": "./src/exports/*.ts",
       "require": "./src/exports/*.ts",
       "types": "./src/exports/*.ts"
-    },
-    "./dist/*": {
-      "import": "./src/*.ts",
-      "require": "./src/*.ts",
-      "types": "./src/*.ts"
-    },
-    "./dist/admin/*": {
-      "import": "./src/admin/*.*",
-      "require": "./dist/admin/*.js",
-      "types": "./dist/admin/*.d.ts"
     }
   },
   "scripts": {
