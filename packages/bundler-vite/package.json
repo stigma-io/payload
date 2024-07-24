@@ -38,11 +38,13 @@
     "get-port": "5.1.1",
     "path-browserify": "1.0.1",
     "vite": "^4.5.0",
-    "vite-plugin-virtual": "^0.2.0"
+    "vite-plugin-virtual": "^0.2.0",
+    "react": "18.2.0"
   },
   "devDependencies": {
     "@payloadcms/eslint-config": "workspace:*",
-    "@stigma-io/payload": "workspace:*"
+    "@stigma-io/payload": "workspace:*",
+    "express": "^4.19.2"
   },
   "peerDependencies": {
     "@stigma-io/payload": "^2.0.0",
