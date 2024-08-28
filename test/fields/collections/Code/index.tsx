@@ -97,7 +97,7 @@ section h1 {
 <title>Prism</title>
 <link rel="stylesheet" href="assets/style.css" />
 <link rel="stylesheet" href="themes/prism.css" data-noprefix />
-<script src="assets/vendor/prefixfree.min.js"></script>
+<script src="../assets/vendor/prefixfree.min.js"></script>
 
 <script>var _gaq = [['_setAccount', 'UA-11111111-1'], ['_trackPageview']];</script>
 <script src="https://www.google-analytics.com/ga.js" async></script>
